@@ -137,71 +137,89 @@ static CGFloat const ContentMultiplier = 3.0f;
             break;
     }
     [self scrollToItemAtIndexPath:indexPath atScrollPosition:position animated:YES];
-    [self.secondaryDelegate collectionView:collectionView didSelectItemAtIndexPath:indexPath];
+    
+    if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:didSelectItemAtIndexPath:)]) {
+        [self.secondaryDelegate collectionView:collectionView didSelectItemAtIndexPath:indexPath];
+    }
 }
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (!self.secondaryDelegate) {
-        return YES;
+    if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:shouldHighlightItemAtIndexPath:)]) {
+        return [self.secondaryDelegate collectionView:collectionView shouldHighlightItemAtIndexPath:indexPath];
     }
-    return [self.secondaryDelegate collectionView:collectionView shouldHighlightItemAtIndexPath:indexPath];
+    return YES;
 }
 - (void)collectionView:(UICollectionView *)collectionView didHighlightItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self.secondaryDelegate collectionView:collectionView didHighlightItemAtIndexPath:indexPath];
+    if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:didHighlightItemAtIndexPath:)]) {
+        [self.secondaryDelegate collectionView:collectionView didHighlightItemAtIndexPath:indexPath];
+    }
 }
 - (void)collectionView:(UICollectionView *)collectionView didUnhighlightItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self.secondaryDelegate collectionView:collectionView didUnhighlightItemAtIndexPath:indexPath];
+    if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:didUnhighlightItemAtIndexPath:)]) {
+        [self.secondaryDelegate collectionView:collectionView didUnhighlightItemAtIndexPath:indexPath];
+    }
 }
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (!self.secondaryDelegate) {
-        return YES;
+    if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:shouldSelectItemAtIndexPath:)]) {
+        return [self.secondaryDelegate collectionView:collectionView shouldSelectItemAtIndexPath:indexPath];
     }
-    return [self.secondaryDelegate collectionView:collectionView shouldSelectItemAtIndexPath:indexPath];
+    return YES;
 }
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldDeselectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (!self.secondaryDelegate) {
-        return YES;
+    if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:shouldDeselectItemAtIndexPath:)]) {
+        return [self.secondaryDelegate collectionView:collectionView shouldDeselectItemAtIndexPath:indexPath];
     }
-    return [self.secondaryDelegate collectionView:collectionView shouldDeselectItemAtIndexPath:indexPath];
+    return YES;
 }
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self.secondaryDelegate collectionView:collectionView didDeselectItemAtIndexPath:indexPath];
+    if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:didDeselectItemAtIndexPath:)]) {
+        [self.secondaryDelegate collectionView:collectionView didDeselectItemAtIndexPath:indexPath];
+    }
 }
 - (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self.secondaryDelegate collectionView:collectionView didEndDisplayingCell:cell forItemAtIndexPath:indexPath];
+    if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:didEndDisplayingCell:forItemAtIndexPath:)]) {
+        [self.secondaryDelegate collectionView:collectionView didEndDisplayingCell:cell forItemAtIndexPath:indexPath];
+    }
 }
 - (void)collectionView:(UICollectionView *)collectionView didEndDisplayingSupplementaryView:(UICollectionReusableView *)view forElementOfKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)indexPath
 {
-    [self.secondaryDelegate collectionView:collectionView didEndDisplayingSupplementaryView:view forElementOfKind:elementKind atIndexPath:indexPath];
+    if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:didEndDisplayingSupplementaryView:forElementOfKind:atIndexPath:)]) {
+        [self.secondaryDelegate collectionView:collectionView didEndDisplayingSupplementaryView:view forElementOfKind:elementKind atIndexPath:indexPath];
+    }
 }
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [self.secondaryDelegate collectionView:collectionView shouldShowMenuForItemAtIndexPath:indexPath];
+    if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:shouldShowMenuForItemAtIndexPath:)]) {
+        return [self.secondaryDelegate collectionView:collectionView shouldShowMenuForItemAtIndexPath:indexPath];
+    }
+    return NO;
 }
 - (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender
 {
-    if (!self.secondaryDelegate) {
-        return NO;
+    if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:canPerformAction:forItemAtIndexPath:withSender:)]) {
+        return [self.secondaryDelegate collectionView:collectionView canPerformAction:action forItemAtIndexPath:indexPath withSender:sender];
     }
-    return [self.secondaryDelegate collectionView:collectionView canPerformAction:action forItemAtIndexPath:indexPath withSender:sender];
+    return NO;
 }
 - (void)collectionView:(UICollectionView *)collectionView performAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender
 {
-    [self.secondaryDelegate collectionView:collectionView performAction:action forItemAtIndexPath:indexPath withSender:sender];
+    if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:performAction:forItemAtIndexPath:withSender:)]) {
+        [self.secondaryDelegate collectionView:collectionView performAction:action forItemAtIndexPath:indexPath withSender:sender];
+    }
 }
 - (UICollectionViewTransitionLayout *)collectionView:(UICollectionView *)collectionView transitionLayoutForOldLayout:(UICollectionViewLayout *)fromLayout newLayout:(UICollectionViewLayout *)toLayout
 {
-    if (!self.secondaryDelegate) {
-        return [[UICollectionViewTransitionLayout alloc] initWithCurrentLayout:fromLayout
-                                                                    nextLayout:toLayout];
+    if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:transitionLayoutForOldLayout:newLayout:)]) {
+        return [self.secondaryDelegate collectionView:collectionView transitionLayoutForOldLayout:fromLayout newLayout:toLayout];
     }
-    return [self.secondaryDelegate collectionView:collectionView transitionLayoutForOldLayout:fromLayout newLayout:toLayout];
+    return [[UICollectionViewTransitionLayout alloc] initWithCurrentLayout:fromLayout
+                                                                nextLayout:toLayout];
 }
 
 @end
