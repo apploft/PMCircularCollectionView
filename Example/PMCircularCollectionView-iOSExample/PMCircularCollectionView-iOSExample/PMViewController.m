@@ -21,7 +21,8 @@
     
     UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    layout.minimumLineSpacing = 0.0f;
+    layout.minimumLineSpacing = 0.0f; // Vertical Spacing
+    layout.minimumInteritemSpacing = 0.0f; // Horizontal Spacing
     
     PMCircularCollectionView *collectionView = [[PMCircularCollectionView alloc] initWithFrame:self.view.bounds
                                                                           collectionViewLayout:layout];

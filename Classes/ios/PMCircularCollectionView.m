@@ -59,6 +59,9 @@ static CGFloat const ContentMultiplier = 3.0f;
     [cell.contentView removeSubviews];
     [cell.contentView addSubview:view];
     
+    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)self.collectionViewLayout;
+    PMDirection direction = layout.scrollDirection == UICollectionViewScrollDirectionHorizontal? PMDirectionVertical : PMDirectionHorizontal;
+    [view centerInRect:cell.contentView.bounds forDirection:direction];
     return cell;
 }
 
