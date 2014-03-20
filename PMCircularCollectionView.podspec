@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
   s.name             = "PMCircularCollectionView"
   s.version          = "0.0.1"
   s.summary          = "Demonstrates how a UICollectionView subclass can scroll infinitely in the horizontal or vertical direction."
-  s.homepage         = "https://github.com/petermeyers1/PMCircularCollectionView"
+  s.homepage         = "https://github.com/petermeyers1/#{s.name}"
   s.license          = 'MIT'
   s.author           = { "Peter Meyers" => "petermeyers1@gmail.com" }
   s.source           = { :git => "git@github.com:petermeyers1/#{s.name}.git", :tag => s.version.to_s }
