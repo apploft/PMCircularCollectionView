@@ -26,7 +26,7 @@
     
     PMCircularCollectionView *collectionView = [[PMCircularCollectionView alloc] initWithFrame:self.view.bounds
                                                                           collectionViewLayout:layout];
-    collectionView.backgroundColor = [UIColor blueColor];
+    collectionView.backgroundColor = [UIColor clearColor];
     
 //    UIImageView *pg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pg.jpg"]];
 //    UIImageView *kobe = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"kobe.jpg"]];
@@ -46,7 +46,6 @@
 {
     UILabel *label = [UILabel new];
     label.text = string;
-    label.backgroundColor = [UIColor orangeColor];
     [label sizeToFit];
     return label;
 }

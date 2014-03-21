@@ -114,18 +114,8 @@ static CGFloat const ContentMultiplier = 3.0f;
     
     UIView *view = self.views[indexPath.row % self.views.count];
 
-    cell.contentView.backgroundColor = [UIColor greenColor];
     [cell.contentView removeSubviews];
     [cell.contentView addSubview:view];
-    
-    UILabel *label = [UILabel new];
-    label.text = [NSString stringWithFormat:@"%@  / %@",
-                  [[NSNumber numberWithInteger:indexPath.row] stringValue],
-                  [[NSNumber numberWithFloat:self.views.count * ContentMultiplier] stringValue]];
-    
-    label.backgroundColor = [UIColor redColor];
-    [label sizeToFit];
-    [cell.contentView addSubview:label];
     
     UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)self.collectionViewLayout;
     PMDirection direction = layout.scrollDirection == UICollectionViewScrollDirectionHorizontal? PMDirectionVertical : PMDirectionHorizontal;
