@@ -119,7 +119,10 @@ static CGFloat const ContentMultiplier = 3.0f;
     [cell.contentView addSubview:view];
     
     UILabel *label = [UILabel new];
-    label.text = [NSString stringWithFormat:@"%d  / %.0f", indexPath.row, self.views.count * ContentMultiplier];
+    label.text = [NSString stringWithFormat:@"%@  / %@",
+                  [[NSNumber numberWithInteger:indexPath.row] stringValue],
+                  [[NSNumber numberWithFloat:self.views.count * ContentMultiplier] stringValue]];
+    
     label.backgroundColor = [UIColor redColor];
     [label sizeToFit];
     [cell.contentView addSubview:label];
