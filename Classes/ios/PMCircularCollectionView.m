@@ -79,12 +79,22 @@ static CGFloat const ContentMultiplier = 3.0f;
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
+    // Find index path of closest cell. Do not use -indexPathForItemAtPoint:
+    // This method returns nil if the specified point lands in the spacing between cells.
+   
     CGPoint middlePoint = self.contentOffset;
     middlePoint.x += self.bounds.size.width / 2.0f;
     middlePoint.y += self.bounds.size.height / 2.0f;
     
-    NSIndexPath *middleIndexPath = [self indexPathForItemAtPoint:middlePoint];
-    [self scrollToItemAtIndexPath:middleIndexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
+    NSIndexPath *indexPath = [self visibleIndexPathNearestToPoint:middlePoint];
+    
+    if (indexPath) {
+        [self scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
+
+        if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:didSelectItemAtIndexPath:)]) {
+            [self.secondaryDelegate collectionView:self didSelectItemAtIndexPath:indexPath];
+        }
+    }
 }
 
 #pragma mark - UICollectionViewDatasource Methods
@@ -104,8 +114,15 @@ static CGFloat const ContentMultiplier = 3.0f;
     
     UIView *view = self.views[indexPath.row % self.views.count];
 
+    cell.contentView.backgroundColor = [UIColor greenColor];
     [cell.contentView removeSubviews];
     [cell.contentView addSubview:view];
+    
+    UILabel *label = [UILabel new];
+    label.text = [NSString stringWithFormat:@"%d  / %.0f", indexPath.row, self.views.count * ContentMultiplier];
+    label.backgroundColor = [UIColor redColor];
+    [label sizeToFit];
+    [cell.contentView addSubview:label];
     
     UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)self.collectionViewLayout;
     PMDirection direction = layout.scrollDirection == UICollectionViewScrollDirectionHorizontal? PMDirectionVertical : PMDirectionHorizontal;

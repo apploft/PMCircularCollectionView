@@ -17,11 +17,9 @@ typedef NS_OPTIONS(NSInteger, PMDirection) {
 
 + (NSString *) nibName;
 
-+ (UINib *) nib;
++ (instancetype) instanceFromNibWithOwner:(id)ownerOrNil;
 
 - (void) removeSubviews;
-
-- (void) centerInRect:(CGRect)rect forDirection:(PMDirection)direction;
 
 - (UIImage *)blurredViewWithRadius:(CGFloat)radius
 						iterations:(NSUInteger)iterations
@@ -29,4 +27,7 @@ typedef NS_OPTIONS(NSInteger, PMDirection) {
 						saturation:(CGFloat)saturation
 						 tintColor:(UIColor *)tintColor
 							  crop:(CGRect)crop;
+
+- (void) centerInRect:(CGRect)rect forDirection:(PMDirection)direction;
+
 @end

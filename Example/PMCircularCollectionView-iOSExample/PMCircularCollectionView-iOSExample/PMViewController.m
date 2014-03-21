@@ -21,12 +21,12 @@
     
     UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    layout.minimumLineSpacing = 0.0f; // Vertical Spacing
-    layout.minimumInteritemSpacing = 0.0f; // Horizontal Spacing
+    layout.minimumLineSpacing = 100.0f; // Vertical Spacing
+    layout.minimumInteritemSpacing = 100.0f; // Horizontal Spacing
     
     PMCircularCollectionView *collectionView = [[PMCircularCollectionView alloc] initWithFrame:self.view.bounds
                                                                           collectionViewLayout:layout];
-    collectionView.backgroundColor = [UIColor clearColor];
+    collectionView.backgroundColor = [UIColor blueColor];
     
 //    UIImageView *pg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pg.jpg"]];
 //    UIImageView *kobe = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"kobe.jpg"]];
@@ -34,23 +34,21 @@
 //    UIImageView *cp = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cp.jpg"]];
 //    collectionView.views = @[pg, kobe, lj, cp];
     
-    CGRect frame = {0, 0, self.view.bounds.size.width/2.0f, self.view.bounds.size.width/2.0f};
-    UILabel *label1 = [[UILabel alloc] initWithFrame:frame];
-    label1.text = @"Label1";
-    label1.textAlignment = NSTextAlignmentCenter;
-    UILabel *label2 = [[UILabel alloc] initWithFrame:frame];
-    label2.text = @"Label2";
-    label2.textAlignment = NSTextAlignmentCenter;
-    UILabel *label3 = [[UILabel alloc] initWithFrame:frame];
-    label3.text = @"Label3";
-    label3.textAlignment = NSTextAlignmentCenter;
-    UILabel *label4 = [[UILabel alloc] initWithFrame:frame];
-    label4.text = @"Label4";
-    label4.textAlignment = NSTextAlignmentCenter;
-    collectionView.views = @[label1, label2, label3, label4];
+    collectionView.views = @[[self labelWithString:@"label 0"],
+                             [self labelWithString:@"label 1"],
+                             [self labelWithString:@"label 2"],
+                             [self labelWithString:@"label 3"]];
     
     [self.view addSubview:collectionView];
 }
 
+- (UILabel *)labelWithString:(NSString *)string
+{
+    UILabel *label = [UILabel new];
+    label.text = string;
+    label.backgroundColor = [UIColor orangeColor];
+    [label sizeToFit];
+    return label;
+}
 
 @end
