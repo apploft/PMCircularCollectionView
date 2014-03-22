@@ -15,4 +15,6 @@
 
 - (instancetype) initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewFlowLayout *)layout;
 
+- (void) scrollToView:(UIView *)view animated:(BOOL)animated;
+
 @end

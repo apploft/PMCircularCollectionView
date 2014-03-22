@@ -10,7 +10,7 @@
 #import "PMUtils.h"
 
 static NSString *CellReuseID = @"Cell";
-static CGFloat const ContentMultiplier = 3.0f;
+static CGFloat const ContentMultiplier = 4.0f;
 
 @interface PMCircularCollectionView () <UICollectionViewDataSource, UICollectionViewDelegate, UIScrollViewDelegate>
 
@@ -29,6 +29,11 @@ static CGFloat const ContentMultiplier = 3.0f;
         [self registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:CellReuseID];
     }
     return self;
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    [self recenterIfNecessary];
 }
 
 - (void) recenterIfNecessary
@@ -70,32 +75,173 @@ static CGFloat const ContentMultiplier = 3.0f;
     }
 }
 
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    [self recenterIfNecessary];
+- (void) centerNearestIndexPath
+{
+    // Find index path of closest cell. Do not use -indexPathForItemAtPoint:
+    // This method returns nil if the specified point lands in the spacing between cells.
+    
+    NSIndexPath *indexPath = [self visibleIndexPathNearestToPoint:[self contentOffsetInBoundsCenter]];
+    
+    if (indexPath) {
+        [self collectionView:self didSelectItemAtIndexPath:indexPath];
+    }
+}
+
+- (void) scrollToView:(UIView *)view animated:(BOOL)animated
+{
+    NSUInteger originalIndexOfView = [self.views indexOfObject:view];
+    
+    if (originalIndexOfView != NSNotFound) {
+        
+        NSIndexPath *indexPathAtMiddle = [self visibleIndexPathNearestToPoint:[self contentOffsetInBoundsCenter]];
+        
+        NSInteger originalIndexOfMiddle = indexPathAtMiddle.item % self.views.count;
+        
+        if (originalIndexOfView != originalIndexOfMiddle) {
+            
+            NSInteger delta = [self.views distanceFromIndex:originalIndexOfMiddle toIndex:originalIndexOfView circular:YES];
+            
+            NSInteger toItem = indexPathAtMiddle.item + delta;
+            
+            NSIndexPath *toIndexPath = [NSIndexPath indexPathForItem:toItem inSection:0];
+            
+            [self scrollToItemAtIndexPath:toIndexPath
+                         atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally | UICollectionViewScrollPositionCenteredVertically
+                                 animated:animated];
+        }
+    }
+}
+
+- (CGPoint) contentOffsetInBoundsCenter
+{
+    CGPoint middlePoint = self.contentOffset;
+    middlePoint.x += self.bounds.size.width / 2.0f;
+    middlePoint.y += self.bounds.size.height / 2.0f;
+    return middlePoint;
 }
 
 #pragma mark - UIScrollViewDelegate Methods
 
+
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-    // Find index path of closest cell. Do not use -indexPathForItemAtPoint:
-    // This method returns nil if the specified point lands in the spacing between cells.
-   
-    CGPoint middlePoint = self.contentOffset;
-    middlePoint.x += self.bounds.size.width / 2.0f;
-    middlePoint.y += self.bounds.size.height / 2.0f;
+    [self centerNearestIndexPath];
     
-    NSIndexPath *indexPath = [self visibleIndexPathNearestToPoint:middlePoint];
-    
-    if (indexPath) {
-        [self scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
-
-        if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:didSelectItemAtIndexPath:)]) {
-            [self.secondaryDelegate collectionView:self didSelectItemAtIndexPath:indexPath];
-        }
+    if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
+        [self.secondaryDelegate scrollViewDidEndDecelerating:scrollView];
     }
 }
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
+        [self.secondaryDelegate scrollViewDidScroll:scrollView];
+    }
+}
+
+- (void)scrollViewDidZoom:(UIScrollView *)scrollView
+{
+    if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewDidZoom:)]) {
+        [self.secondaryDelegate scrollViewDidZoom:scrollView];
+    }
+}
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewWillBeginDragging:)]) {
+        [self.secondaryDelegate scrollViewWillBeginDragging:scrollView];
+    }
+}
+
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
+{
+    CGPoint targetOffset = *targetContentOffset;
+    
+    BOOL targetFirstIndexPath = CGPointEqualToPoint(targetOffset, CGPointZero);
+    BOOL targetLastIndexPath = (targetOffset.x == self.contentSize.width - self.bounds.size.width &&
+                                targetOffset.y == self.contentSize.height - self.bounds.size.height);
+    
+    if ( !targetFirstIndexPath && !targetLastIndexPath) {
+        
+        targetOffset.x += self.bounds.size.width / 2.0f;
+        targetOffset.y += self.bounds.size.height / 2.0f;
+        
+        NSIndexPath *targetedIndexPath = [self indexPathNearestToPoint:targetOffset];
+
+        UICollectionViewLayoutAttributes *attributes = [self layoutAttributesForItemAtIndexPath:targetedIndexPath];
+        
+        targetOffset = [self contentOffsetForCenteredRect:attributes.frame];
+        
+        *targetContentOffset = targetOffset;
+    }
+    
+    if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:)]) {
+        [self.secondaryDelegate scrollViewWillEndDragging:scrollView withVelocity:velocity targetContentOffset:targetContentOffset];
+    }
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    if (!decelerate) {
+        [self centerNearestIndexPath];
+    }
+    
+    if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewDidEndDragging:willDecelerate:)]) {
+        [self.secondaryDelegate scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
+    }
+}
+
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
+{
+    if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewWillBeginDecelerating:)]) {
+        [self.secondaryDelegate scrollViewWillBeginDecelerating:scrollView];
+    }
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
+{
+    if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewDidEndScrollingAnimation:)]) {
+        [self.secondaryDelegate scrollViewDidEndScrollingAnimation:scrollView];
+    }
+}
+
+- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
+{
+    if ([self.secondaryDelegate respondsToSelector:@selector(viewForZoomingInScrollView:)]) {
+        [self.secondaryDelegate viewForZoomingInScrollView:scrollView];
+    }
+    return nil;
+}
+
+- (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view
+{
+    if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewWillBeginZooming:withView:)]) {
+        [self.secondaryDelegate scrollViewWillBeginZooming:scrollView withView:view];
+    }
+}
+
+- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale
+{
+    if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewDidEndZooming:withView:atScale:)]) {
+        [self.secondaryDelegate scrollViewDidEndZooming:scrollView withView:view atScale:scale];
+    }
+}
+
+- (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView
+{
+    if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewShouldScrollToTop:)]) {
+        return [self.secondaryDelegate scrollViewShouldScrollToTop:scrollView];
+    }
+    return YES;
+}
+
+- (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView
+{
+    if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewDidScrollToTop:)]) {
+        [self.secondaryDelegate scrollViewDidScrollToTop:scrollView];
+    }
+}
+
 
 #pragma mark - UICollectionViewDatasource Methods
 
@@ -123,7 +269,9 @@ static CGFloat const ContentMultiplier = 3.0f;
     return cell;
 }
 
+
 #pragma mark - UICollectionViewDelegate Methods
+
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewFlowLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -136,17 +284,9 @@ static CGFloat const ContentMultiplier = 3.0f;
 }
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    UICollectionViewScrollPosition position;
-    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collectionView.collectionViewLayout;
-    switch (layout.scrollDirection) {
-        case UICollectionViewScrollDirectionHorizontal:
-            position = UICollectionViewScrollPositionCenteredHorizontally;
-            break;
-        case UICollectionViewScrollDirectionVertical:
-            position = UICollectionViewScrollPositionCenteredVertically;
-            break;
-    }
-    [self scrollToItemAtIndexPath:indexPath atScrollPosition:position animated:YES];
+    [self scrollToItemAtIndexPath:indexPath
+                 atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally | UICollectionViewScrollPositionCenteredVertically
+                         animated:YES];
     
     if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:didSelectItemAtIndexPath:)]) {
         [self.secondaryDelegate collectionView:collectionView didSelectItemAtIndexPath:indexPath];

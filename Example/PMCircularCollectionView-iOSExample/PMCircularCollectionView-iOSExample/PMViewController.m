@@ -11,6 +11,9 @@
 
 @interface PMViewController ()
 
+@property (nonatomic, strong) PMCircularCollectionView *collectionView;
+@property (nonatomic, strong) UIView *viewToScrollTo;
+
 @end
 
 @implementation PMViewController
@@ -24,9 +27,12 @@
     layout.minimumLineSpacing = 100.0f; // Vertical Spacing
     layout.minimumInteritemSpacing = 100.0f; // Horizontal Spacing
     
-    PMCircularCollectionView *collectionView = [[PMCircularCollectionView alloc] initWithFrame:self.view.bounds
-                                                                          collectionViewLayout:layout];
-    collectionView.backgroundColor = [UIColor clearColor];
+    CGRect frame = self.view.bounds;
+    
+    self.collectionView = [[PMCircularCollectionView alloc] initWithFrame:frame
+                                                     collectionViewLayout:layout];
+    
+    self.collectionView.backgroundColor = [UIColor clearColor];
     
 //    UIImageView *pg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pg.jpg"]];
 //    UIImageView *kobe = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"kobe.jpg"]];
@@ -34,12 +40,23 @@
 //    UIImageView *cp = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cp.jpg"]];
 //    collectionView.views = @[pg, kobe, lj, cp];
     
-    collectionView.views = @[[self labelWithString:@"label 0"],
-                             [self labelWithString:@"label 1"],
+    self.viewToScrollTo = [self labelWithString:@"label 1"];
+    
+    self.collectionView.views = @[[self labelWithString:@"label 0"],
+                             self.viewToScrollTo,
                              [self labelWithString:@"label 2"],
                              [self labelWithString:@"label 3"]];
     
-    [self.view addSubview:collectionView];
+    [self.view addSubview:self.collectionView];
+    
+    if ([self.collectionView.delegate respondsToSelector:@selector(collectionView:didSelectItemAtIndexPath:)]) {
+        [self.collectionView.delegate collectionView:self.collectionView didSelectItemAtIndexPath:[NSIndexPath indexPathForItem:2 inSection:0]];
+    }
+}
+
+- (void) viewDidAppear:(BOOL)animated
+{
+    [self.collectionView scrollToView:self.viewToScrollTo animated:YES];
 }
 
 - (UILabel *)labelWithString:(NSString *)string

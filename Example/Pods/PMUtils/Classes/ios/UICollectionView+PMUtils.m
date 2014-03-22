@@ -8,33 +8,7 @@
 
 #import "UICollectionView+PMUtils.h"
 
-@implementation UICollectionView (PMUtils)
-
-- (NSIndexPath *) visibleIndexPathNearestToPoint:(CGPoint)point
-{
-    NSIndexPath *nearestIndexPath = nil;
-    CGFloat closestDistance = MAXFLOAT;
-    
-    for (NSIndexPath *indexPath in self.indexPathsForVisibleItems) {
-        
-        UICollectionViewLayoutAttributes *attributes = [self layoutAttributesForItemAtIndexPath:indexPath];
-        CGRect frame = attributes.frame;
-        
-        if (CGRectContainsPoint(frame, point)) {
-            return indexPath;
-        }
-
-        CGFloat distance = [self squaredDistanceFromRect:attributes.frame toPoint:point];
-        
-        if (distance < closestDistance) {
-            closestDistance = distance;
-            nearestIndexPath = indexPath;
-        }
-    }
-    return nearestIndexPath;
-}
-
-- (CGFloat) squaredDistanceFromRect:(CGRect)rect toPoint:(CGPoint)point
+static inline CGFloat PMSquaredDistanceFromRectToPoint(CGRect rect, CGPoint point)
 {
     CGPoint closestPoint = rect.origin;
     
@@ -56,6 +30,70 @@
     CGFloat dy = point.y - closestPoint.y;
     
     return dx*dx + dy*dy;
+}
+
+@implementation UICollectionView (PMUtils)
+
+- (NSIndexPath *) visibleIndexPathNearestToPoint:(CGPoint)point
+{
+    NSIndexPath *nearestIndexPath = nil;
+    CGFloat closestDistance = MAXFLOAT;
+    
+    for (NSIndexPath *indexPath in self.indexPathsForVisibleItems) {
+        
+        CGFloat distance = [self squaredDistanceFromItemAtIndexPath:indexPath toPoint:point];
+        
+        if (distance < closestDistance) {
+            closestDistance = distance;
+            nearestIndexPath = indexPath;
+        }
+    }
+    return nearestIndexPath;
+}
+
+- (NSIndexPath *) indexPathNearestToPoint:(CGPoint)point
+{
+    NSIndexPath *nearestIndexPath = nil;
+    CGFloat closestDistance = MAXFLOAT;
+    
+    NSInteger sections = [self numberOfSections];
+    
+    for (NSInteger section = 0; section < sections; section++) {
+
+        NSInteger items = [self numberOfItemsInSection:section];
+        
+        for (NSInteger item = 0; item < items; item++) {
+            
+            NSIndexPath *indexPath = [NSIndexPath indexPathForItem:item inSection:section];
+            
+            CGFloat distance = [self squaredDistanceFromItemAtIndexPath:indexPath toPoint:point];
+            
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                nearestIndexPath = indexPath;
+            }
+        }
+    }
+    return nearestIndexPath;
+}
+
+- (CGPoint) contentOffsetForCenteredRect:(CGRect)rect
+{
+    CGFloat offsetX = rect.origin.x - (self.bounds.size.width - rect.size.width) / 2.0f;
+    CGFloat offsetY = rect.origin.y - (self.bounds.size.height - rect.size.height) / 2.0f;
+    return CGPointMake(offsetX, offsetY);
+}
+
+- (CGFloat) squaredDistanceFromItemAtIndexPath:(NSIndexPath *)indexPath toPoint:(CGPoint)point
+{
+    UICollectionViewLayoutAttributes *attributes = [self layoutAttributesForItemAtIndexPath:indexPath];
+    CGRect frame = attributes.frame;
+    
+    if (CGRectContainsPoint(frame, point)) {
+        return 0.0f;
+    }
+    
+    return PMSquaredDistanceFromRectToPoint(frame, point);
 }
 
 @end

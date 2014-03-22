@@ -12,4 +12,9 @@
 
 - (NSIndexPath *) visibleIndexPathNearestToPoint:(CGPoint)point;
 
+// Less efficient than -visibleIndexPathNearestToPoint:
+- (NSIndexPath *) indexPathNearestToPoint:(CGPoint)point;
+
+- (CGPoint) contentOffsetForCenteredRect:(CGRect)rect;
+
 @end
