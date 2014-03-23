@@ -9,12 +9,20 @@
 #import "PMCircularCollectionView.h"
 #import "PMUtils.h"
 
-static NSString *CellReuseID = @"Cell";
 static CGFloat const ContentMultiplier = 4.0f;
 
-@interface PMCircularCollectionView () <UICollectionViewDataSource, UICollectionViewDelegate, UIScrollViewDelegate>
+static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
+    return [[NSNumber numberWithInteger:index] stringValue];
+}
+
+@interface PMCircularCollectionView ()
+
+<UICollectionViewDataSource, UICollectionViewDelegate, UIScrollViewDelegate, UICollectionViewDelegateFlowLayout>
+
+@property (nonatomic) CGSize viewsSize;
 
 @end
+
 
 @implementation PMCircularCollectionView
 
@@ -26,9 +34,52 @@ static CGFloat const ContentMultiplier = 4.0f;
         self.delegate = self;
         self.showsHorizontalScrollIndicator = NO;
         self.showsVerticalScrollIndicator = NO;
-        [self registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:CellReuseID];
     }
     return self;
+}
+
+- (void) setViews:(NSArray *)views
+{
+    if (_views != views) {
+        _views = views;
+        [self registerCells];
+        [self setMinimumSpacing];
+        [self reloadData];
+    }
+}
+
+- (void) registerCells
+{
+    for (NSUInteger i = 0; i < self.views.count; i++) {
+        [self registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:PMReuseIdentifierForViewIndex(i)];
+    }
+}
+
+- (void) setMinimumSpacing
+{
+    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)self.collectionViewLayout;
+    
+    CGFloat contentWidth = 0.0f;
+    CGFloat contentHeight = 0.0f;
+    
+    for (UIView *view in self.views) {
+        contentWidth += view.frame.size.width;
+        contentHeight += view.frame.size.height;
+    }
+    
+    self.viewsSize = CGSizeMake(contentWidth, contentHeight);
+    
+    NSUInteger spaces = self.views.count - 1;
+    CGFloat minimumInteritemSpacing = ceilf((self.bounds.size.width - contentWidth) / spaces + 1.0f);
+    CGFloat minimumLineSpacing = ceilf((self.bounds.size.height - contentHeight) / spaces + 1.0f);
+    
+    if (minimumInteritemSpacing - layout.minimumInteritemSpacing > 0.0f) {
+        layout.minimumInteritemSpacing = minimumInteritemSpacing;
+    }
+    
+    if (minimumLineSpacing - layout.minimumLineSpacing > 0.0f) {
+        layout.minimumLineSpacing = minimumLineSpacing;
+    }
 }
 
 - (void)layoutSubviews {
@@ -38,41 +89,44 @@ static CGFloat const ContentMultiplier = 4.0f;
 
 - (void) recenterIfNecessary
 {
-    CGPoint currentOffset = self.contentOffset;
-    CGFloat centerOffset;
-    CGFloat distanceFromCenter;
-    CGFloat contentDistance;
-    
     UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)self.collectionViewLayout;
+    CGPoint currentOffset = self.contentOffset;
     
     switch (layout.scrollDirection) {
             
-        case UICollectionViewScrollDirectionHorizontal:
-            contentDistance = self.contentSize.width;
-            centerOffset = (contentDistance -  self.bounds.size.width) / 2.0f;
-            distanceFromCenter = fabsf(currentOffset.x - centerOffset);
-            break;
+        case UICollectionViewScrollDirectionHorizontal: {
+
+            CGFloat contentCenteredX = (self.contentSize.width - self.bounds.size.width) / 2.0f;
+            CGFloat deltaFromCenter = currentOffset.x - contentCenteredX;
+            CGFloat singleContentWidth = self.viewsSize.width + layout.minimumInteritemSpacing * self.views.count;
             
-        case UICollectionViewScrollDirectionVertical:
-            contentDistance = self.contentSize.height;
-            centerOffset = (contentDistance - self.bounds.size.height) / 2.0f;
-            distanceFromCenter = fabsf(currentOffset.y - centerOffset);
+            if (fabsf(deltaFromCenter) >= singleContentWidth ) {
+                
+                CGFloat correction = (deltaFromCenter > 0)? deltaFromCenter - singleContentWidth : deltaFromCenter + singleContentWidth;
+                
+                currentOffset.x = contentCenteredX + correction;
+            }
+
             break;
+        }
+        case UICollectionViewScrollDirectionVertical: {
+            
+            CGFloat contentCenteredY = (self.contentSize.height - self.bounds.size.height) / 2.0f;
+            CGFloat deltaFromCenter = currentOffset.y - contentCenteredY;
+            CGFloat singleContentHeight = self.viewsSize.height + layout.minimumLineSpacing * self.views.count;
+            
+            if (fabsf(deltaFromCenter) >= singleContentHeight) {
+                
+                CGFloat correction = (deltaFromCenter > 0)? deltaFromCenter - singleContentHeight : deltaFromCenter + singleContentHeight;
+                
+                currentOffset.y = contentCenteredY + correction;
+            }
+            
+            break;
+        }
     }
     
-    if (distanceFromCenter >= contentDistance / ContentMultiplier  ) {
-        
-        switch (layout.scrollDirection) {
-            case UICollectionViewScrollDirectionHorizontal:
-                currentOffset.x = centerOffset;
-                break;
-            case UICollectionViewScrollDirectionVertical:
-                currentOffset.y = centerOffset;
-                break;
-        }
-        
-        self.contentOffset = currentOffset;
-    }
+    self.contentOffset = currentOffset;
 }
 
 - (void) centerNearestIndexPath
@@ -93,12 +147,18 @@ static CGFloat const ContentMultiplier = 4.0f;
     
     if (originalIndexOfView != NSNotFound) {
         
-        NSIndexPath *indexPathAtMiddle = [self visibleIndexPathNearestToPoint:[self contentOffsetInBoundsCenter]];
+        NSIndexPath *indexPathAtMiddle;
+        if (self.visibleCells.count) {
+            indexPathAtMiddle = [self visibleIndexPathNearestToPoint:[self contentOffsetInBoundsCenter]];
+        }
+        else {
+            indexPathAtMiddle = [self indexPathNearestToPoint:[self contentOffsetInBoundsCenter]];
+        }
         
-        NSInteger originalIndexOfMiddle = indexPathAtMiddle.item % self.views.count;
-        
-        if (originalIndexOfView != originalIndexOfMiddle) {
+        if (indexPathAtMiddle) {
             
+            NSInteger originalIndexOfMiddle = indexPathAtMiddle.item % self.views.count;
+                
             NSInteger delta = [self.views distanceFromIndex:originalIndexOfMiddle toIndex:originalIndexOfView circular:YES];
             
             NSInteger toItem = indexPathAtMiddle.item + delta;
@@ -120,8 +180,65 @@ static CGFloat const ContentMultiplier = 4.0f;
     return middlePoint;
 }
 
+
+#pragma mark - UICollectionViewDatasource Methods
+
+
+- (NSInteger) collectionView: (UICollectionView *) collectionView
+      numberOfItemsInSection: (NSInteger) section
+{
+    return self.views.count * ContentMultiplier;
+}
+
+- (UICollectionViewCell *) collectionView:(UICollectionView *) collectionView
+                   cellForItemAtIndexPath: (NSIndexPath *) indexPath
+{
+    NSUInteger viewIndex = indexPath.item % self.views.count;
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:PMReuseIdentifierForViewIndex(viewIndex)
+                                                                           forIndexPath:indexPath];
+    if (!cell.contentView.subviews.count) {
+        
+        UIView *view = self.views[viewIndex];
+        [cell.contentView addSubview:view];
+        
+        UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)self.collectionViewLayout;
+        PMDirection direction = layout.scrollDirection == UICollectionViewScrollDirectionHorizontal? PMDirectionVertical : PMDirectionHorizontal;
+        [view centerInRect:cell.contentView.bounds forDirection:direction];
+    }
+
+    return cell;
+}
+
+
 #pragma mark - UIScrollViewDelegate Methods
 
+
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
+{
+    CGPoint targetOffset = *targetContentOffset;
+    
+    BOOL targetFirstIndexPath = CGPointEqualToPoint(targetOffset, CGPointZero);
+    BOOL targetLastIndexPath = (targetOffset.x == self.contentSize.width - self.bounds.size.width &&
+                                targetOffset.y == self.contentSize.height - self.bounds.size.height);
+    
+    if ( !targetFirstIndexPath && !targetLastIndexPath) {
+        
+        targetOffset.x += self.bounds.size.width / 2.0f;
+        targetOffset.y += self.bounds.size.height / 2.0f;
+        
+        NSIndexPath *targetedIndexPath = [self indexPathNearestToPoint:targetOffset];
+
+        UICollectionViewLayoutAttributes *attributes = [self layoutAttributesForItemAtIndexPath:targetedIndexPath];
+        
+        targetOffset = [self contentOffsetForCenteredRect:attributes.frame];
+        
+        *targetContentOffset = targetOffset;
+    }
+    
+    if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:)]) {
+        [self.secondaryDelegate scrollViewWillEndDragging:scrollView withVelocity:velocity targetContentOffset:targetContentOffset];
+    }
+}
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
@@ -150,33 +267,6 @@ static CGFloat const ContentMultiplier = 4.0f;
 {
     if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewWillBeginDragging:)]) {
         [self.secondaryDelegate scrollViewWillBeginDragging:scrollView];
-    }
-}
-
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
-{
-    CGPoint targetOffset = *targetContentOffset;
-    
-    BOOL targetFirstIndexPath = CGPointEqualToPoint(targetOffset, CGPointZero);
-    BOOL targetLastIndexPath = (targetOffset.x == self.contentSize.width - self.bounds.size.width &&
-                                targetOffset.y == self.contentSize.height - self.bounds.size.height);
-    
-    if ( !targetFirstIndexPath && !targetLastIndexPath) {
-        
-        targetOffset.x += self.bounds.size.width / 2.0f;
-        targetOffset.y += self.bounds.size.height / 2.0f;
-        
-        NSIndexPath *targetedIndexPath = [self indexPathNearestToPoint:targetOffset];
-
-        UICollectionViewLayoutAttributes *attributes = [self layoutAttributesForItemAtIndexPath:targetedIndexPath];
-        
-        targetOffset = [self contentOffsetForCenteredRect:attributes.frame];
-        
-        *targetContentOffset = targetOffset;
-    }
-    
-    if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:)]) {
-        [self.secondaryDelegate scrollViewWillEndDragging:scrollView withVelocity:velocity targetContentOffset:targetContentOffset];
     }
 }
 
@@ -243,34 +333,7 @@ static CGFloat const ContentMultiplier = 4.0f;
 }
 
 
-#pragma mark - UICollectionViewDatasource Methods
-
-
-- (NSInteger) collectionView: (UICollectionView *) collectionView
-      numberOfItemsInSection: (NSInteger) section
-{
-    return self.views.count * ContentMultiplier;
-}
-
-- (UICollectionViewCell *) collectionView:(UICollectionView *) collectionView
-                   cellForItemAtIndexPath: (NSIndexPath *) indexPath
-{
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:CellReuseID
-                                                                           forIndexPath:indexPath];
-    
-    UIView *view = self.views[indexPath.row % self.views.count];
-
-    [cell.contentView removeSubviews];
-    [cell.contentView addSubview:view];
-    
-    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)self.collectionViewLayout;
-    PMDirection direction = layout.scrollDirection == UICollectionViewScrollDirectionHorizontal? PMDirectionVertical : PMDirectionHorizontal;
-    [view centerInRect:cell.contentView.bounds forDirection:direction];
-    return cell;
-}
-
-
-#pragma mark - UICollectionViewDelegate Methods
+#pragma mark - UICollectionViewDelegateFlowLayout Methods
 
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewFlowLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -282,6 +345,10 @@ static CGFloat const ContentMultiplier = 4.0f;
         case UICollectionViewScrollDirectionVertical: return CGSizeMake(self.bounds.size.width, view.frame.size.height);
     }
 }
+
+#pragma mark - UICollectionViewDelegate Methods
+
+
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     [self scrollToItemAtIndexPath:indexPath
