@@ -8,13 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface PMCircularCollectionView : UICollectionView
+@interface PMCircularCollectionView : UICollectionView <UICollectionViewDelegate>
 
 @property (nonatomic, strong) NSArray *views;
-@property (nonatomic, weak) id<UICollectionViewDelegate> secondaryDelegate;
 
 - (instancetype) initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewFlowLayout *)layout;
-
-- (void) scrollToView:(UIView *)view animated:(BOOL)animated;
 
 @end

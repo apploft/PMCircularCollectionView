@@ -4,24 +4,6 @@
    <FileRef
       location = "group:../PMCircularCollectionView.podspec">
    </FileRef>
-   <Group
-      location = "container:Classes"
-      name = "Classes">
-      <Group
-         location = "group:ios"
-         name = "ios">
-         <FileRef
-            location = "group:PMCircularCollectionView.h">
-         </FileRef>
-         <FileRef
-            location = "group:PMCircularCollectionView.m">
-         </FileRef>
-      </Group>
-      <Group
-         location = "group:osx"
-         name = "osx">
-      </Group>
-   </Group>
    <FileRef
       location = "group:PMCircularCollectionView-iOSExample/PMCircularCollectionView-iOSExample.xcodeproj">
    </FileRef>
