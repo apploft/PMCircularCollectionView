@@ -5,6 +5,12 @@
       location = "group:../PMCircularCollectionView.podspec">
    </FileRef>
    <FileRef
+      location = "group:../releasepod.command">
+   </FileRef>
+   <FileRef
+      location = "group:updatepod.command">
+   </FileRef>
+   <FileRef
       location = "group:PMCircularCollectionView-iOSExample/PMCircularCollectionView-iOSExample.xcodeproj">
    </FileRef>
    <FileRef

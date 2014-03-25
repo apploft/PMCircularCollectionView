@@ -82,49 +82,57 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
 {
     if (_shadowRadius != shadowRadius) {
         _shadowRadius = shadowRadius;
-        [self.shadowLayer removeFromSuperlayer];
-        self.shadowLayer = nil;
-        if (shadowRadius) {
-            [self.layer addSublayer:self.shadowLayer];
-        }
+        [self resetShadowLayer];
     }
 }
 
-- (CAGradientLayer *) shadowLayer
+- (void) setBackgroundColor:(UIColor *)backgroundColor
 {
-    if (!_shadowLayer) {
+    if (self.backgroundColor != backgroundColor) {
+        [super setBackgroundColor:backgroundColor];
+        [self resetShadowLayer];
+    }
+}
+
+- (void) resetShadowLayer
+{
+    [self.shadowLayer removeFromSuperlayer];
+    self.shadowLayer = nil;
+    
+    if (self.shadowRadius && self.backgroundColor.alpha) {
         
         UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout*)self.collectionViewLayout;
         
         UIColor *outerColor = self.backgroundColor;
-        UIColor *innerColor = [self.backgroundColor colorWithAlpha:0.0];
+        UIColor *innerColor = [self.backgroundColor colorWithAlphaComponent:0.0];
         
-        _shadowLayer = [CAGradientLayer layer];
-        _shadowLayer.frame = self.bounds;
-        _shadowLayer.colors = @[(id)outerColor.CGColor, (id)innerColor.CGColor, (id)innerColor.CGColor, (id)outerColor.CGColor];
-        _shadowLayer.anchorPoint = CGPointZero;
+        self.shadowLayer = [CAGradientLayer layer];
+        self.shadowLayer.frame = self.bounds;
+        self.shadowLayer.colors = @[(id)outerColor.CGColor, (id)innerColor.CGColor, (id)innerColor.CGColor, (id)outerColor.CGColor];
+        self.shadowLayer.anchorPoint = CGPointZero;
         
         CGFloat totalDistance;
         switch (layout.scrollDirection) {
                 
             case UICollectionViewScrollDirectionHorizontal:
                 totalDistance = self.bounds.size.width;
-                _shadowLayer.startPoint = CGPointMake(0.0f, 0.5f);
-                _shadowLayer.endPoint = CGPointMake(1.0f, 0.5f);
+                self.shadowLayer.startPoint = CGPointMake(0.0f, 0.5f);
+                self.shadowLayer.endPoint = CGPointMake(1.0f, 0.5f);
                 break;
                 
             case UICollectionViewScrollDirectionVertical:
                 totalDistance = self.bounds.size.height;
-                _shadowLayer.startPoint = CGPointMake(0.5f, 0.0f);
-                _shadowLayer.endPoint = CGPointMake(0.5f, 1.0f);
+                self.shadowLayer.startPoint = CGPointMake(0.5f, 0.0f);
+                self.shadowLayer.endPoint = CGPointMake(0.5f, 1.0f);
                 break;
         }
         
         CGFloat location1 = self.shadowRadius / totalDistance;
         CGFloat location2 = 1.0f - location1;
-        _shadowLayer.locations = @[@0.0, @(location1), @(location2), @1.0];
+        self.shadowLayer.locations = @[@0.0, @(location1), @(location2), @1.0];
+        
+        [self.layer addSublayer:self.shadowLayer];
     }
-    return _shadowLayer;
 }
 
 - (void) registerCells
