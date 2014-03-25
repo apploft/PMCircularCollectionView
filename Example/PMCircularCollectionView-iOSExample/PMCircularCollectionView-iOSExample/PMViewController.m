@@ -32,7 +32,7 @@
     self.collectionView = [[PMCenteredCircularCollectionView alloc] initWithFrame:frame
                                                              collectionViewLayout:layout];
     
-    self.collectionView.backgroundColor = [UIColor clearColor];
+    self.collectionView.backgroundColor = [UIColor whiteColor];
     self.collectionView.shadowRadius = 10.0f;
     
     UIImageView *pg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pg.jpg"]];
@@ -64,11 +64,6 @@
     label.text = string;
     [label sizeToFit];
     return label;
-}
-
-- (void) scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    NSLog(@"Recieved message");
 }
 
 @end

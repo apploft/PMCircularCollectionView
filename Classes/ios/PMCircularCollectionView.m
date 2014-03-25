@@ -82,7 +82,11 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
 {
     if (_shadowRadius != shadowRadius) {
         _shadowRadius = shadowRadius;
-        self.layer.mask = shadowRadius? self.shadowLayer : nil;
+        [self.shadowLayer removeFromSuperlayer];
+        self.shadowLayer = nil;
+        if (shadowRadius) {
+            [self.layer addSublayer:self.shadowLayer];
+        }
     }
 }
 
@@ -91,12 +95,13 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
     if (!_shadowLayer) {
         
         UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout*)self.collectionViewLayout;
-        UIColor *opaque = [UIColor clearColor];
-        UIColor *transparent = [UIColor blackColor];
+        
+        UIColor *outerColor = self.backgroundColor;
+        UIColor *innerColor = [self.backgroundColor colorWithAlpha:0.0];
         
         _shadowLayer = [CAGradientLayer layer];
         _shadowLayer.frame = self.bounds;
-        _shadowLayer.colors = @[(id)opaque.CGColor, (id)transparent.CGColor, (id)transparent.CGColor, (id)opaque.CGColor];
+        _shadowLayer.colors = @[(id)outerColor.CGColor, (id)innerColor.CGColor, (id)innerColor.CGColor, (id)outerColor.CGColor];
         _shadowLayer.anchorPoint = CGPointZero;
         
         CGFloat totalDistance;
