@@ -16,25 +16,56 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
 }
 
 
-@interface PMCircularCollectionView () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
+@interface PMCircularCollectionView () <UICollectionViewDataSource>
 
 @property (nonatomic) CGSize viewsSize;
+@property (nonatomic, strong) CAGradientLayer *shadowLayer;
+@property (nonatomic, strong) PMProtocolInterceptor *delegateInterceptor;
 
 @end
 
 
 @implementation PMCircularCollectionView
 
+- (instancetype) init
+{
+    return [super initWithFrame:CGRectZero collectionViewLayout:[UICollectionViewFlowLayout new]];
+}
+
+- (instancetype) initWithFrame:(CGRect)frame
+{
+    return [super initWithFrame:frame collectionViewLayout:[UICollectionViewFlowLayout new]];
+}
+
 - (instancetype) initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewFlowLayout *)layout
 {
     self = [super initWithFrame:frame collectionViewLayout:layout];
     if (self) {
+        
+        NSSet *protocols = [NSSet setWithObjects:
+                            @protocol(UICollectionViewDelegate),
+                            @protocol(UIScrollViewDelegate),
+                            @protocol(UICollectionViewDelegateFlowLayout), nil];
+        
+        _delegateInterceptor = [[PMProtocolInterceptor alloc] initWithInterceptedProtocols:protocols];
+        _delegateInterceptor.middleMan = self;
+        self.delegate = (id)self.delegateInterceptor;
         self.dataSource = self;
-        self.delegate = self;
         self.showsHorizontalScrollIndicator = NO;
         self.showsVerticalScrollIndicator = NO;
     }
     return self;
+}
+
+
+- (id<UICollectionViewDelegateFlowLayout>) secondaryDelegate
+{
+    return self.delegateInterceptor.receiver;
+}
+
+- (void) setSecondaryDelegate:(id<UICollectionViewDelegateFlowLayout>)secondaryDelegate
+{
+    self.delegateInterceptor.receiver = secondaryDelegate;
 }
 
 - (void) setViews:(NSArray *)views
@@ -45,6 +76,50 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
         [self setMinimumSpacing];
         [self reloadData];
     }
+}
+
+- (void) setShadowRadius:(CGFloat)shadowRadius
+{
+    if (_shadowRadius != shadowRadius) {
+        _shadowRadius = shadowRadius;
+        self.layer.mask = shadowRadius? self.shadowLayer : nil;
+    }
+}
+
+- (CAGradientLayer *) shadowLayer
+{
+    if (!_shadowLayer) {
+        
+        UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout*)self.collectionViewLayout;
+        UIColor *opaque = [UIColor clearColor];
+        UIColor *transparent = [UIColor blackColor];
+        
+        _shadowLayer = [CAGradientLayer layer];
+        _shadowLayer.frame = self.bounds;
+        _shadowLayer.colors = @[(id)opaque.CGColor, (id)transparent.CGColor, (id)transparent.CGColor, (id)opaque.CGColor];
+        _shadowLayer.anchorPoint = CGPointZero;
+        
+        CGFloat totalDistance;
+        switch (layout.scrollDirection) {
+                
+            case UICollectionViewScrollDirectionHorizontal:
+                totalDistance = self.bounds.size.width;
+                _shadowLayer.startPoint = CGPointMake(0.0f, 0.5f);
+                _shadowLayer.endPoint = CGPointMake(1.0f, 0.5f);
+                break;
+                
+            case UICollectionViewScrollDirectionVertical:
+                totalDistance = self.bounds.size.height;
+                _shadowLayer.startPoint = CGPointMake(0.5f, 0.0f);
+                _shadowLayer.endPoint = CGPointMake(0.5f, 1.0f);
+                break;
+        }
+        
+        CGFloat location1 = self.shadowRadius / totalDistance;
+        CGFloat location2 = 1.0f - location1;
+        _shadowLayer.locations = @[@0.0, @(location1), @(location2), @1.0];
+    }
+    return _shadowLayer;
 }
 
 - (void) registerCells
@@ -105,7 +180,6 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
                 
                 currentOffset.x = contentCenteredX + correction;
             }
-
             break;
         }
         case UICollectionViewScrollDirectionVertical: {
@@ -120,7 +194,6 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
                 
                 currentOffset.y = contentCenteredY + correction;
             }
-            
             break;
         }
     }
@@ -133,7 +206,6 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
 {
     return indexPath.item % self.views.count;
 }
-
 
 #pragma mark - UICollectionViewDatasource Methods
 
@@ -173,6 +245,26 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
     switch (collectionViewLayout.scrollDirection) {
         case UICollectionViewScrollDirectionHorizontal: return CGSizeMake(view.frame.size.width, self.bounds.size.height);
         case UICollectionViewScrollDirectionVertical: return CGSizeMake(self.bounds.size.width, view.frame.size.height);
+    }
+    
+    if ([self.secondaryDelegate respondsToSelector:@selector(collectionView:layout:sizeForItemAtIndexPath:)]) {
+        [self.secondaryDelegate collectionView:collectionView layout:collectionViewLayout sizeForItemAtIndexPath:indexPath];
+    }
+}
+
+#pragma mark - UIScrollViewDelegate Methods
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    if (self.shadowRadius) {
+        [CATransaction begin];
+        [CATransaction setDisableActions:YES];
+        self.shadowLayer.position = scrollView.contentOffset;
+        [CATransaction commit];
+    }
+    
+    if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
+        [self.secondaryDelegate scrollViewDidScroll:scrollView];
     }
 }
 

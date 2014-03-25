@@ -9,7 +9,7 @@
 #import "PMViewController.h"
 #import "PMCenteredCircularCollectionView.h"
 
-@interface PMViewController ()
+@interface PMViewController () <UICollectionViewDelegate, UIScrollViewDelegate>
 
 @property (nonatomic, strong) PMCenteredCircularCollectionView *collectionView;
 @property (nonatomic, strong) UIView *viewToScrollTo;
@@ -33,6 +33,7 @@
                                                              collectionViewLayout:layout];
     
     self.collectionView.backgroundColor = [UIColor clearColor];
+    self.collectionView.shadowRadius = 10.0f;
     
     UIImageView *pg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"pg.jpg"]];
     UIImageView *kobe = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"kobe.jpg"]];
@@ -63,6 +64,11 @@
     label.text = string;
     [label sizeToFit];
     return label;
+}
+
+- (void) scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    NSLog(@"Recieved message");
 }
 
 @end
