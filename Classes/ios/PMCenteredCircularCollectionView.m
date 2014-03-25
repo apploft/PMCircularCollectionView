@@ -13,9 +13,17 @@
 
 - (void) centerView:(UIView *)view animated:(BOOL)animated
 {
-    NSUInteger originalIndexOfView = [self.views indexOfObject:view];
-    
-    if (originalIndexOfView != NSNotFound) {
+    NSUInteger index = [self.views indexOfObject:view];
+    [self centerViewAtIndex:index animated:animated];
+}
+
+- (void) centerViewAtIndex:(NSUInteger)index animated:(BOOL)animated
+{
+    if (index < self.views.count) {
+        
+        if (CGSizeEqualToSize(CGSizeZero, self.contentSize)) {
+            [self layoutSubviews];
+        }
         
         NSIndexPath *indexPathAtMiddle;
         if (self.visibleCells.count) {
@@ -29,7 +37,7 @@
             
             NSInteger originalIndexOfMiddle = indexPathAtMiddle.item % self.views.count;
             
-            NSInteger delta = [self.views distanceFromIndex:originalIndexOfMiddle toIndex:originalIndexOfView circular:YES];
+            NSInteger delta = [self.views distanceFromIndex:originalIndexOfMiddle toIndex:index circular:YES];
             
             NSInteger toItem = indexPathAtMiddle.item + delta;
             

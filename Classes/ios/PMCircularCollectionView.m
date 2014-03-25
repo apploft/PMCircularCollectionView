@@ -152,7 +152,6 @@ static inline NSString * PMReuseIdentifierForViewIndex(NSUInteger index) {
                                                                            forIndexPath:indexPath];
     if (!cell.contentView.subviews.count) {
         
-        cell.contentView.backgroundColor = [UIColor blueColor];
         UIView *view = self.views[viewIndex];
         [cell.contentView addSubview:view];
         
