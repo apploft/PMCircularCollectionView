@@ -12,6 +12,10 @@
 
 @implementation PMCenteredCircularCollectionView
 
+- (instancetype) initWithFrame:(CGRect)frame collectionViewLayout:(PMCenteredCollectionViewFlowLayout *)layout
+{
+    return [super initWithFrame:frame collectionViewLayout:layout];
+}
 
 - (void) centerView:(UIView *)view animated:(BOOL)animated
 {
@@ -76,36 +80,6 @@
 #pragma mark - UIScrollViewDelegate Methods
 
 
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
-{
-    CGPoint targetOffset = *targetContentOffset;
-    
-    BOOL targetFirstIndexPath = CGPointEqualToPoint(targetOffset, CGPointZero);
-    BOOL targetLastIndexPath = (targetOffset.x == self.contentSize.width - self.bounds.size.width &&
-                                targetOffset.y == self.contentSize.height - self.bounds.size.height);
-    
-    if ( !targetFirstIndexPath && !targetLastIndexPath) {
-        
-        targetOffset.x += self.bounds.size.width / 2.0f;
-        targetOffset.y += self.bounds.size.height / 2.0f;
-        
-        NSIndexPath *targetedIndexPath = [self indexPathNearestToPoint:targetOffset];
-        
-        UICollectionViewLayoutAttributes *attributes = [self layoutAttributesForItemAtIndexPath:targetedIndexPath];
-        
-        targetOffset = [self contentOffsetForCenteredRect:attributes.frame];
-        
-        *targetContentOffset = targetOffset;
-    }
-
-    if ([[self superclass] instancesRespondToSelector:@selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:)]) {
-        [super scrollViewWillEndDragging:scrollView withVelocity:velocity targetContentOffset:targetContentOffset];
-    }
-    else if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:)]) {
-        [self.secondaryDelegate scrollViewWillEndDragging:scrollView withVelocity:velocity targetContentOffset:targetContentOffset];
-    }
-}
-
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     [self centerNearestIndexPath];
@@ -115,20 +89,6 @@
     }
     else if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
         [self.secondaryDelegate scrollViewDidEndDecelerating:scrollView];
-    }
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
-{
-    if (!decelerate) {
-        [self centerNearestIndexPath];
-    }
-    
-    if ([[self superclass] instancesRespondToSelector:@selector(scrollViewDidEndDragging:willDecelerate:)]) {
-        [super scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
-    }
-    else if ([self.secondaryDelegate respondsToSelector:@selector(scrollViewDidEndDragging:willDecelerate:)]) {
-        [self.secondaryDelegate scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
     }
 }
 

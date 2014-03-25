@@ -22,7 +22,7 @@
 {
     [super viewDidLoad];
     
-    UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
+    PMCenteredCollectionViewFlowLayout *layout = [PMCenteredCollectionViewFlowLayout new];
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     layout.minimumLineSpacing = 10.0f; // Vertical Spacing
     layout.minimumInteritemSpacing = 10.0f; // Horizontal Spacing
