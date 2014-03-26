@@ -31,19 +31,13 @@
             [self layoutSubviews];
         }
         
-        NSIndexPath *indexPathAtMiddle;
-        if (self.visibleCells.count) {
-            indexPathAtMiddle = [self visibleIndexPathNearestToPoint:[self contentOffsetInBoundsCenter]];
-        }
-        else {
-            indexPathAtMiddle = [self indexPathNearestToPoint:[self contentOffsetInBoundsCenter]];
-        }
+        NSIndexPath *indexPathAtMiddle = [self indexPathAtMiddle];
         
         if (indexPathAtMiddle) {
             
             NSInteger originalIndexOfMiddle = indexPathAtMiddle.item % self.views.count;
             
-            NSInteger delta = [self.views distanceFromIndex:originalIndexOfMiddle toIndex:index circular:YES];
+            NSInteger delta = [self.views shortestCircularDistanceFromIndex:originalIndexOfMiddle toIndex:index];
             
             NSInteger toItem = indexPathAtMiddle.item + delta;
             
@@ -56,12 +50,22 @@
     }
 }
 
+- (NSIndexPath *) indexPathAtMiddle
+{
+    if (self.visibleCells.count) {
+        return [self visibleIndexPathNearestToPoint:[self contentOffsetInBoundsCenter]];
+    }
+    else {
+        return [self indexPathNearestToPoint:[self contentOffsetInBoundsCenter]];
+    }
+}
+
 - (void) centerNearestIndexPath
 {
     // Find index path of closest cell. Do not use -indexPathForItemAtPoint:
     // This method returns nil if the specified point lands in the spacing between cells.
     
-    NSIndexPath *indexPath = [self visibleIndexPathNearestToPoint:[self contentOffsetInBoundsCenter]];
+    NSIndexPath *indexPath = [self indexPathAtMiddle];
     
     if (indexPath) {
         [self collectionView:self didSelectItemAtIndexPath:indexPath];
