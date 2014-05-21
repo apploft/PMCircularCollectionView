@@ -65,12 +65,21 @@
 - (void) centerNearestIndexPath
 {
     // Find index path of closest cell. Do not use -indexPathForItemAtPoint:
-    // This method returns nil if the specified point lands in the spacing between cells.
+    // because this method returns nil if the specified point lands in the spacing between cells.
     
     NSIndexPath *indexPath = [self indexPathAtMiddle];
     
-    if (indexPath) {
-        [self collectionView:self didSelectItemAtIndexPath:indexPath];
+    [self centerIndexPath:indexPath];
+}
+
+- (void) centerIndexPath:(NSIndexPath *)indexPath
+{
+    [self scrollToItemAtIndexPath:indexPath
+                 atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally | UICollectionViewScrollPositionCenteredVertically
+                         animated:YES];
+    
+    if (self.centeredCollectionViewDelegate) {
+        [self.centeredCollectionViewDelegate collectionView:self didCenterItemAtIndexPath:indexPath];
     }
 }
 
@@ -104,9 +113,7 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self scrollToItemAtIndexPath:indexPath
-                 atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally | UICollectionViewScrollPositionCenteredVertically
-                         animated:YES];
+    [self centerIndexPath:indexPath];
     
     if ([[self superclass] instancesRespondToSelector:@selector(collectionView:didSelectItemAtIndexPath:)]) {
         [super collectionView:collectionView didSelectItemAtIndexPath:indexPath];

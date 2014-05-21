@@ -109,10 +109,10 @@ static NSUInteger const ContentMultiplier = 4;
     }
 }
 
-- (void) setBackgroundColor:(UIColor *)backgroundColor
+- (void) setShadowColor:(UIColor *)shadowColor
 {
-    if (self.backgroundColor != backgroundColor) {
-        [super setBackgroundColor:backgroundColor];
+    if (![_shadowColor isEqual:shadowColor]) {
+        _shadowColor = shadowColor;
         [self resetShadowLayer];
     }
 }
@@ -122,12 +122,12 @@ static NSUInteger const ContentMultiplier = 4;
     [self.shadowLayer removeFromSuperlayer];
     self.shadowLayer = nil;
     
-    if (self.shadowRadius && self.backgroundColor.alpha) {
+    if (self.shadowRadius && self.shadowColor.alpha) {
         
         UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout*)self.collectionViewLayout;
         
-        UIColor *outerColor = self.backgroundColor;
-        UIColor *innerColor = [self.backgroundColor colorWithAlphaComponent:0.0];
+        UIColor *outerColor = self.shadowColor;
+        UIColor *innerColor = [self.shadowColor colorWithAlphaComponent:0.0];
         
         self.shadowLayer = [CAGradientLayer layer];
         self.shadowLayer.frame = self.bounds;
@@ -160,7 +160,9 @@ static NSUInteger const ContentMultiplier = 4;
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    [self recenterIfNecessary];
+    if (self.scrollEnabled) {
+        [self recenterIfNecessary];
+    }
 }
 
 - (void) recenterIfNecessary
@@ -215,7 +217,28 @@ static NSUInteger const ContentMultiplier = 4;
 - (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     self.itemCount = [[self PMDataSource] numberOfItemsInCircularCollectionView:self];
-    return self.itemCount * ContentMultiplier;
+    
+    CGSize contentSize = CGSizeZero;
+    for (NSUInteger i = 0; i < self.itemCount; i++) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForItem:i inSection:0];
+        CGSize itemSize = [self collectionView:collectionView layout:collectionView.collectionViewLayout sizeForItemAtIndexPath:indexPath];
+        contentSize.height += itemSize.height;
+        contentSize.width += itemSize.width;
+    }
+    
+    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collectionView.collectionViewLayout;
+    switch (layout.scrollDirection)
+    {
+        case UICollectionViewScrollDirectionHorizontal:
+            collectionView.scrollEnabled = contentSize.width >= collectionView.bounds.size.width;
+            break;
+        case UICollectionViewScrollDirectionVertical:
+            collectionView.scrollEnabled = contentSize.height >= collectionView.bounds.size.height;
+            break;
+    }
+    
+    self.shadowLayer.hidden = !collectionView.scrollEnabled;
+    return collectionView.scrollEnabled? self.itemCount * ContentMultiplier : self.itemCount;
 }
 
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath

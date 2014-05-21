@@ -13,6 +13,7 @@
 @interface PMCircularCollectionView : UICollectionView <UICollectionViewDelegateFlowLayout>
 
 @property (nonatomic) CGFloat shadowRadius;
+@property (nonatomic, strong) UIColor *shadowColor;
 @property (nonatomic, readonly) NSInteger itemCount;
 @property (nonatomic, strong) UICollectionViewFlowLayout *collectionViewLayout;
 
