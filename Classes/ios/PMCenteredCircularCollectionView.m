@@ -9,8 +9,17 @@
 #import "PMCenteredCircularCollectionView.h"
 #import "PMUtils.h"
 
+@interface PMCenteredCircularCollectionView ()
+@property (nonatomic, weak) id <PMCircularCollectionViewDataSource> pmDataSource;
+@property (nonatomic, weak) id <PMCenteredCircularCollectionViewDelegate> pmDelegate;
+@end
 
 @implementation PMCenteredCircularCollectionView
+
++ (instancetype) collectionViewWithFrame:(CGRect)frame collectionViewLayout:(PMCenteredCollectionViewFlowLayout *)layout
+{
+    return [[self alloc] initWithFrame:frame collectionViewLayout:layout];
+}
 
 - (instancetype) initWithFrame:(CGRect)frame collectionViewLayout:(PMCenteredCollectionViewFlowLayout *)layout
 {
@@ -23,9 +32,23 @@
     [self centerCellAtIndex:indexPath.item animated:animated];
 }
 
+- (void) setDataSource:(id<PMCircularCollectionViewDataSource>)dataSource
+{
+    [super setDataSource:dataSource];
+    self.pmDataSource = dataSource;
+}
+
+- (void) setDelegate:(id<PMCenteredCircularCollectionViewDelegate>)delegate
+{
+    [super setDelegate:delegate];
+    self.pmDelegate = delegate;
+}
+
 - (void) centerCellAtIndex:(NSUInteger)index animated:(BOOL)animated
 {
-    if (index < self.itemCount) {
+    NSInteger itemCount = [self.pmDataSource numberOfItemsInCircularCollectionView:self];
+    
+    if (index < itemCount) {
         
         if (CGSizeEqualToSize(CGSizeZero, self.contentSize)) {
             [self layoutSubviews];
@@ -35,9 +58,9 @@
         
         if (indexPathAtMiddle) {
             
-            NSInteger originalIndexOfMiddle = indexPathAtMiddle.item % self.itemCount;
+            NSInteger originalIndexOfMiddle = indexPathAtMiddle.item % itemCount;
             
-            NSRange range = NSMakeRange(0, self.itemCount);
+            NSRange range = NSMakeRange(0, itemCount);
 
             NSInteger delta = PMShortestCircularDistance(originalIndexOfMiddle, index, range);
             
@@ -78,8 +101,8 @@
                  atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally | UICollectionViewScrollPositionCenteredVertically
                          animated:YES];
     
-    if (self.centeredCollectionViewDelegate) {
-        [self.centeredCollectionViewDelegate collectionView:self didCenterItemAtIndexPath:indexPath];
+    if ([self.pmDelegate respondsToSelector:@selector(collectionView:didCenterItemAtIndex:)]) {
+        [self.pmDelegate collectionView:self didCenterItemAtIndex:[self normalizedIndexFromIndexPath:indexPath]];
     }
 }
 
@@ -102,14 +125,13 @@
     if ([[self superclass] instancesRespondToSelector:@selector(scrollViewDidEndDecelerating:)]) {
         [super scrollViewDidEndDecelerating:scrollView];
     }
-    else if ([[self PMDelegate] respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
-        [[self PMDelegate] scrollViewDidEndDecelerating:scrollView];
+    else if ([self.pmDelegate respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
+        [self.pmDelegate scrollViewDidEndDecelerating:scrollView];
     }
 }
 
 
 #pragma mark - UICollectionViewDelegate Methods
-
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -118,8 +140,8 @@
     if ([[self superclass] instancesRespondToSelector:@selector(collectionView:didSelectItemAtIndexPath:)]) {
         [super collectionView:collectionView didSelectItemAtIndexPath:indexPath];
     }
-    else if ([[self PMDelegate] respondsToSelector:@selector(collectionView:didSelectItemAtIndexPath:)]) {
-        [[self PMDelegate] collectionView:collectionView didSelectItemAtIndexPath:indexPath];
+    else if ([self.pmDelegate respondsToSelector:@selector(collectionView:didSelectItemAtIndexPath:)]) {
+        [self.pmDelegate collectionView:collectionView didSelectItemAtIndexPath:indexPath];
     }
 }
 

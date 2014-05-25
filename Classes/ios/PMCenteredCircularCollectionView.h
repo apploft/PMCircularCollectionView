@@ -9,22 +9,28 @@
 #import "PMCircularCollectionView.h"
 #import "PMCenteredCollectionViewFlowLayout.h"
 
+
 @protocol PMCenteredCircularCollectionViewDelegate;
 
 @interface PMCenteredCircularCollectionView : PMCircularCollectionView
 
-@property (nonatomic, weak) id<PMCenteredCircularCollectionViewDelegate> centeredCollectionViewDelegate;
-
-- (instancetype) initWithFrame:(CGRect)frame collectionViewLayout:(PMCenteredCollectionViewFlowLayout *)layout;
+- (void) setDelegate:(id<PMCenteredCircularCollectionViewDelegate>)delegate;
 
 - (void) centerCell:(UICollectionViewCell *)cell animated:(BOOL)animated;
 
 - (void) centerCellAtIndex:(NSUInteger)index animated:(BOOL)animated;
 
-@end
-
-@protocol PMCenteredCircularCollectionViewDelegate <NSObject>
-
-- (void) collectionView:(PMCenteredCircularCollectionView *)collectionView didCenterItemAtIndexPath:(NSIndexPath *)indexPath;
++ (instancetype) collectionViewWithFrame:(CGRect)frame collectionViewLayout:(PMCenteredCollectionViewFlowLayout *)layout;
+- (instancetype) initWithFrame:(CGRect)frame collectionViewLayout:(PMCenteredCollectionViewFlowLayout *)layout;
 
 @end
+
+@protocol PMCenteredCircularCollectionViewDelegate <UICollectionViewDelegateFlowLayout>
+
+@optional
+
+- (void) collectionView:(PMCenteredCircularCollectionView *)collectionView didCenterItemAtIndex:(NSUInteger)index;
+
+@end
+
+

@@ -14,14 +14,14 @@
 
 @property (nonatomic) CGFloat shadowRadius;
 @property (nonatomic, strong) UIColor *shadowColor;
-@property (nonatomic, readonly) NSInteger itemCount;
 @property (nonatomic, strong) UICollectionViewFlowLayout *collectionViewLayout;
 
-- (void)setDataSource:(id<PMCircularCollectionViewDataSource>)dataSource;
-- (id<PMCircularCollectionViewDataSource>)PMDataSource;
+// Overwrite type of delegate and datasource
+- (void) setDelegate:(id<UICollectionViewDelegate>)delegate;
+- (void) setDataSource:(id<PMCircularCollectionViewDataSource>)dataSource;
 
-- (void)setDelegate:(id<UICollectionViewDelegateFlowLayout>)delegate;
-- (id<UICollectionViewDelegateFlowLayout>)PMDelegate;
+// delegate methods all say what index path was selected but we've multiplied the items in the row by a multiplier to allow the circular scroll. Feed that index path to this method to get the correct index.
+- (NSUInteger) normalizedIndexFromIndexPath:(NSIndexPath *)indexPath;
 
 - (instancetype) initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewFlowLayout *)layout;
 + (instancetype) collectionViewWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewFlowLayout *)layout;

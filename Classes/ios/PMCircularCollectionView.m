@@ -16,7 +16,7 @@ static NSUInteger const ContentMultiplier = 4;
 @property (nonatomic, strong) CAGradientLayer *shadowLayer;
 @property (nonatomic, strong) PMProtocolInterceptor *delegateInterceptor;
 @property (nonatomic, strong) PMProtocolInterceptor *dataSourceInterceptor;
-@property (nonatomic, readwrite) NSInteger itemCount;
+@property (nonatomic) NSInteger itemCount;
 @property (nonatomic) CGFloat addedPadding;
 
 @end
@@ -69,12 +69,12 @@ static NSUInteger const ContentMultiplier = 4;
                                 @protocol(UICollectionViewDelegate),
                                 @protocol(UIScrollViewDelegate),
                                 @protocol(UICollectionViewDelegateFlowLayout), nil];
-    self.delegateInterceptor = [[PMProtocolInterceptor alloc] initWithInterceptedProtocols:delegateProtocols];
-    self.delegateInterceptor.middleMan = self;
+    
+    self.delegateInterceptor = [PMProtocolInterceptor interceptorWithMiddleMan:self forProtocols:delegateProtocols];
     [super setDelegate:(id)self.delegateInterceptor];
     
-    self.dataSourceInterceptor = [[PMProtocolInterceptor alloc] initWithInterceptedProtocol:@protocol(UICollectionViewDataSource)];
-    self.dataSourceInterceptor.middleMan = self;
+    self.dataSourceInterceptor = [PMProtocolInterceptor interceptorWithMiddleMan:self
+                                                                     forProtocol:@protocol(UICollectionViewDataSource)];
     [super setDataSource:(id)self.dataSourceInterceptor];
     
     self.showsHorizontalScrollIndicator = NO;
@@ -83,22 +83,16 @@ static NSUInteger const ContentMultiplier = 4;
 
 - (void)setDataSource:(id<PMCircularCollectionViewDataSource>)dataSource
 {
+    [super setDataSource:nil];
     self.dataSourceInterceptor.receiver = dataSource;
-}
-
-- (id<PMCircularCollectionViewDataSource>)PMDataSource
-{
-    return self.dataSourceInterceptor.receiver;
+    [super setDataSource:(id)self.dataSourceInterceptor];
 }
 
 - (void)setDelegate:(id<UICollectionViewDelegateFlowLayout>)delegate
 {
+    [super setDelegate:nil];
     self.delegateInterceptor.receiver = delegate;
-}
-
-- (id<UICollectionViewDelegateFlowLayout>)PMDelegate
-{
-    return self.delegateInterceptor.receiver;
+    [super setDelegate:(id)self.delegateInterceptor];
 }
 
 - (void) setShadowRadius:(CGFloat)shadowRadius
@@ -206,9 +200,9 @@ static NSUInteger const ContentMultiplier = 4;
 }
 
 
-- (NSUInteger) normalizeIndex:(NSUInteger)index
+- (NSUInteger) normalizedIndexFromIndexPath:(NSIndexPath *)indexPath
 {
-    return index % self.itemCount;
+    return indexPath.item % self.itemCount;
 }
 
 #pragma mark - UICollectionViewDatasource Methods
@@ -216,7 +210,7 @@ static NSUInteger const ContentMultiplier = 4;
 
 - (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    self.itemCount = [[self PMDataSource] numberOfItemsInCircularCollectionView:self];
+    self.itemCount = [self.dataSourceInterceptor.receiver numberOfItemsInCircularCollectionView:self];
     
     CGSize contentSize = CGSizeZero;
     for (NSUInteger i = 0; i < self.itemCount; i++) {
@@ -243,10 +237,10 @@ static NSUInteger const ContentMultiplier = 4;
 
 - (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSUInteger normalizedIndex = [self normalizeIndex:indexPath.item];
-    NSString *reuseIdentifier = [[self PMDataSource] circularCollectionView:self reuseIdentifierForIndex:normalizedIndex];
+    NSUInteger normalizedIndex = [self normalizedIndexFromIndexPath:indexPath];
+    NSString *reuseIdentifier = [self.dataSourceInterceptor.receiver circularCollectionView:self reuseIdentifierForIndex:normalizedIndex];
     UICollectionViewCell *cell = [self dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
-    [[self PMDataSource] circularCollectionView:self configureCell:cell atIndex:normalizedIndex];
+    [self.dataSourceInterceptor.receiver circularCollectionView:self configureCell:cell atIndex:normalizedIndex];
     return cell;
 }
 
@@ -255,9 +249,8 @@ static NSUInteger const ContentMultiplier = 4;
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewFlowLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([[self PMDelegate] respondsToSelector:@selector(collectionView:layout:sizeForItemAtIndexPath:)]) {
-        NSIndexPath *normalizedIndexPath = [indexPath indexPathByReplacingLastIndex:[self normalizeIndex:indexPath.item]];
-        return [[self PMDelegate] collectionView:collectionView layout:collectionViewLayout sizeForItemAtIndexPath:normalizedIndexPath];
+    if ([self.delegateInterceptor.receiver respondsToSelector:@selector(collectionView:layout:sizeForItemAtIndexPath:)]) {
+        return [self.delegateInterceptor.receiver collectionView:collectionView layout:collectionViewLayout sizeForItemAtIndexPath:indexPath];
     }
     return collectionViewLayout.itemSize;
 }
@@ -273,8 +266,8 @@ static NSUInteger const ContentMultiplier = 4;
         [CATransaction commit];
     }
     
-    if ([[self PMDelegate] respondsToSelector:@selector(scrollViewDidScroll:)]) {
-        [[self PMDelegate] scrollViewDidScroll:scrollView];
+    if ([self.delegateInterceptor.receiver respondsToSelector:@selector(scrollViewDidScroll:)]) {
+        [self.delegateInterceptor.receiver scrollViewDidScroll:scrollView];
     }
 }
 

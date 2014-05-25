@@ -1,7 +1,7 @@
 PODS:
-  - PMCircularCollectionView (0.0.18):
+  - PMCircularCollectionView (0.0.20):
     - PMUtils
-  - PMUtils (0.0.31)
+  - PMUtils (0.0.39)
 
 DEPENDENCIES:
   - PMCircularCollectionView (from `../PMCircularCollectionView.podspec`)
@@ -11,7 +11,7 @@ EXTERNAL SOURCES:
     :path: ../PMCircularCollectionView.podspec
 
 SPEC CHECKSUMS:
-  PMCircularCollectionView: 35476fc8e76d46fb3621624d76e11d51b31f116f
-  PMUtils: b233b5e431aaaf29e626bb583475a353341978ee
+  PMCircularCollectionView: 56b6129510e630ce454753e27cb3977da88b5c62
+  PMUtils: 2e727cf6f1f774f8cd990f860efa21f8aa0bc9b7
 
 COCOAPODS: 0.32.1
