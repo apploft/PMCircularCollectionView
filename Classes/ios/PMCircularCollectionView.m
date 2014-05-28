@@ -11,19 +11,19 @@
 
 static NSUInteger const ContentMultiplier = 4;
 
-@interface PMCircularCollectionView () <UICollectionViewDataSource>
-
-@property (nonatomic, strong) CAGradientLayer *shadowLayer;
-@property (nonatomic, strong) PMProtocolInterceptor *delegateInterceptor;
-@property (nonatomic, strong) PMProtocolInterceptor *dataSourceInterceptor;
-@property (nonatomic) NSInteger itemCount;
-@property (nonatomic) CGFloat addedPadding;
-
+@interface PMCircularCollectionView ()
+{
+    CAGradientLayer *_shadowLayer;
+    PMProtocolInterceptor *_delegateInterceptor;
+    PMProtocolInterceptor *_dataSourceInterceptor;
+    NSInteger _itemCount;
+    BOOL _implicitlyDisabled;
+    BOOL _delegateRespondsToScrollViewDidScroll;
+}
 @end
 
-
 @implementation PMCircularCollectionView
-
+@synthesize circularDisabled = _explicitlyDisabled;
 
 + (instancetype) collectionViewWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewFlowLayout *)layout
 {
@@ -70,36 +70,56 @@ static NSUInteger const ContentMultiplier = 4;
                                 @protocol(UIScrollViewDelegate),
                                 @protocol(UICollectionViewDelegateFlowLayout), nil];
     
-    self.delegateInterceptor = [PMProtocolInterceptor interceptorWithMiddleMan:self forProtocols:delegateProtocols];
-    [super setDelegate:(id)self.delegateInterceptor];
+    _delegateInterceptor = [PMProtocolInterceptor interceptorWithMiddleMan:self forProtocols:delegateProtocols];
+    [super setDelegate:(id)_delegateInterceptor];
     
-    self.dataSourceInterceptor = [PMProtocolInterceptor interceptorWithMiddleMan:self
-                                                                     forProtocol:@protocol(UICollectionViewDataSource)];
-    [super setDataSource:(id)self.dataSourceInterceptor];
+    _dataSourceInterceptor = [PMProtocolInterceptor interceptorWithMiddleMan:self forProtocol:@protocol(UICollectionViewDataSource)];
+    [super setDataSource:(id)_dataSourceInterceptor];
     
     self.showsHorizontalScrollIndicator = NO;
     self.showsVerticalScrollIndicator = NO;
 }
 
-- (void)setDataSource:(id<PMCircularCollectionViewDataSource>)dataSource
-{
-    [super setDataSource:nil];
-    self.dataSourceInterceptor.receiver = dataSource;
-    [super setDataSource:(id)self.dataSourceInterceptor];
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    [self _recenterIfNecessary];
 }
 
-- (void)setDelegate:(id<UICollectionViewDelegateFlowLayout>)delegate
+#pragma mark - Accessors
+
+
+- (void)setDataSource:(NSObject <UICollectionViewDataSource> *)dataSource
+{
+    [super setDataSource:nil];
+    _dataSourceInterceptor.receiver = dataSource;
+    [super setDataSource:(id)_dataSourceInterceptor];
+}
+
+- (void)setDelegate:(NSObject<UICollectionViewDelegateFlowLayout> *)delegate
 {
     [super setDelegate:nil];
-    self.delegateInterceptor.receiver = delegate;
-    [super setDelegate:(id)self.delegateInterceptor];
+    _delegateInterceptor.receiver = delegate;
+    [super setDelegate:(id)_delegateInterceptor];
+    
+    _delegateRespondsToScrollViewDidScroll = [delegate respondsToSelector:@selector(scrollViewDidScroll:)];
+}
+
+- (void) setCircularDisabled:(BOOL)circularDisabled
+{
+    _explicitlyDisabled = circularDisabled;
+    _shadowLayer.hidden = self.circularDisabled;
+}
+
+- (BOOL) circularDisabled
+{
+    return _explicitlyDisabled || _implicitlyDisabled;
 }
 
 - (void) setShadowRadius:(CGFloat)shadowRadius
 {
     if (_shadowRadius != shadowRadius) {
         _shadowRadius = shadowRadius;
-        [self resetShadowLayer];
+        [self _resetShadowLayer];
     }
 }
 
@@ -107,168 +127,161 @@ static NSUInteger const ContentMultiplier = 4;
 {
     if (![_shadowColor isEqual:shadowColor]) {
         _shadowColor = shadowColor;
-        [self resetShadowLayer];
+        [self _resetShadowLayer];
     }
 }
 
-- (void) resetShadowLayer
+- (NSUInteger) normalizeIndexFromIndexPath:(NSIndexPath *)indexPath
 {
-    [self.shadowLayer removeFromSuperlayer];
-    self.shadowLayer = nil;
+    return indexPath.item % _itemCount;
+}
+
+#pragma mark - UICollectionViewDatasource Methods
+
+- (NSInteger) numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+{
+    return 1;
+}
+
+- (NSInteger) collectionView:(PMCircularCollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    NSParameterAssert([collectionView isKindOfClass:[PMCircularCollectionView class]]);
+    
+    _itemCount = [_dataSourceInterceptor.receiver collectionView:collectionView numberOfItemsInSection:section];
+    _implicitlyDisabled = [self _disableCircularInternallyBasedOnContentSize];
+    
+    return self.circularDisabled? _itemCount : _itemCount * ContentMultiplier;
+}
+
+
+#pragma mark - UIScrollViewDelegate Methods
+
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    if (self.shadowRadius && self.shadowColor) {
+        [CATransaction begin];
+        [CATransaction setDisableActions:YES];
+        _shadowLayer.position = scrollView.contentOffset;
+        [CATransaction commit];
+    }
+    
+    if (_delegateRespondsToScrollViewDidScroll) {
+        [_delegateInterceptor.receiver scrollViewDidScroll:scrollView];
+    }
+}
+
+#pragma mark - Private Methods
+
+- (void) _recenterIfNecessary
+{
+    if (self.circularDisabled == NO) {
+        
+        CGPoint currentOffset = self.contentOffset;
+        
+        switch (self.collectionViewLayout.scrollDirection) {
+                
+            case UICollectionViewScrollDirectionHorizontal: {
+                
+                CGFloat contentCenteredX = (self.contentSize.width - self.bounds.size.width) / 2.0f;
+                CGFloat deltaFromCenter = currentOffset.x - contentCenteredX;
+                CGFloat singleContentWidth = self.contentSize.width / ContentMultiplier;
+                
+                if (fabsf(deltaFromCenter) >= singleContentWidth ) {
+                    
+                    CGFloat correction = (deltaFromCenter > 0)? deltaFromCenter - singleContentWidth : deltaFromCenter + singleContentWidth;
+                    
+                    currentOffset.x = contentCenteredX + correction;
+                }
+                break;
+            }
+            case UICollectionViewScrollDirectionVertical: {
+                
+                CGFloat contentCenteredY = (self.contentSize.height - self.bounds.size.height) / 2.0f;
+                CGFloat deltaFromCenter = currentOffset.y - contentCenteredY;
+                CGFloat singleContentHeight = self.contentSize.height / ContentMultiplier;
+                
+                if (fabsf(deltaFromCenter) >= singleContentHeight) {
+                    
+                    CGFloat correction = (deltaFromCenter > 0)? deltaFromCenter - singleContentHeight : deltaFromCenter + singleContentHeight;
+                    
+                    currentOffset.y = contentCenteredY + correction;
+                }
+                break;
+            }
+        }
+        self.contentOffset = currentOffset;
+    }
+}
+
+- (void) _resetShadowLayer
+{
+    [_shadowLayer removeFromSuperlayer];
+    _shadowLayer = nil;
     
     if (self.shadowRadius && self.shadowColor.alpha) {
-        
-        UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout*)self.collectionViewLayout;
         
         UIColor *outerColor = self.shadowColor;
         UIColor *innerColor = [self.shadowColor colorWithAlphaComponent:0.0];
         
-        self.shadowLayer = [CAGradientLayer layer];
-        self.shadowLayer.frame = self.bounds;
-        self.shadowLayer.colors = @[(id)outerColor.CGColor, (id)innerColor.CGColor, (id)innerColor.CGColor, (id)outerColor.CGColor];
-        self.shadowLayer.anchorPoint = CGPointZero;
+        _shadowLayer = [CAGradientLayer layer];
+        _shadowLayer.frame = self.bounds;
+        _shadowLayer.colors = @[(id)outerColor.CGColor, (id)innerColor.CGColor, (id)innerColor.CGColor, (id)outerColor.CGColor];
+        _shadowLayer.anchorPoint = CGPointZero;
         
         CGFloat totalDistance;
-        switch (layout.scrollDirection) {
+        switch (self.collectionViewLayout.scrollDirection) {
                 
             case UICollectionViewScrollDirectionHorizontal:
                 totalDistance = self.bounds.size.width;
-                self.shadowLayer.startPoint = CGPointMake(0.0f, 0.5f);
-                self.shadowLayer.endPoint = CGPointMake(1.0f, 0.5f);
+                _shadowLayer.startPoint = CGPointMake(0.0f, 0.5f);
+                _shadowLayer.endPoint = CGPointMake(1.0f, 0.5f);
                 break;
                 
             case UICollectionViewScrollDirectionVertical:
                 totalDistance = self.bounds.size.height;
-                self.shadowLayer.startPoint = CGPointMake(0.5f, 0.0f);
-                self.shadowLayer.endPoint = CGPointMake(0.5f, 1.0f);
+                _shadowLayer.startPoint = CGPointMake(0.5f, 0.0f);
+                _shadowLayer.endPoint = CGPointMake(0.5f, 1.0f);
                 break;
         }
         
         CGFloat location1 = self.shadowRadius / totalDistance;
         CGFloat location2 = 1.0f - location1;
-        self.shadowLayer.locations = @[@0.0, @(location1), @(location2), @1.0];
+        _shadowLayer.locations = @[@0.0, @(location1), @(location2), @1.0];
         
-        [self.layer addSublayer:self.shadowLayer];
+        [self.layer addSublayer:_shadowLayer];
     }
 }
 
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    if (self.scrollEnabled) {
-        [self recenterIfNecessary];
-    }
-}
-
-- (void) recenterIfNecessary
+- (BOOL) _disableCircularInternallyBasedOnContentSize
 {
-    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)self.collectionViewLayout;
-    CGPoint currentOffset = self.contentOffset;
+    CGSize contentSize = [self _calculateContentSize];
     
-    switch (layout.scrollDirection) {
-            
-        case UICollectionViewScrollDirectionHorizontal: {
-
-            CGFloat contentCenteredX = (self.contentSize.width - self.bounds.size.width) / 2.0f;
-            CGFloat deltaFromCenter = currentOffset.x - contentCenteredX;
-            CGFloat singleContentWidth = self.contentSize.width / ContentMultiplier;
-
-            if (fabsf(deltaFromCenter) >= singleContentWidth ) {
-                
-                CGFloat correction = (deltaFromCenter > 0)? deltaFromCenter - singleContentWidth : deltaFromCenter + singleContentWidth;
-                
-                currentOffset.x = contentCenteredX + correction;
-            }
-            break;
-        }
-        case UICollectionViewScrollDirectionVertical: {
-            
-            CGFloat contentCenteredY = (self.contentSize.height - self.bounds.size.height) / 2.0f;
-            CGFloat deltaFromCenter = currentOffset.y - contentCenteredY;
-            CGFloat singleContentHeight = self.contentSize.height / ContentMultiplier;
-            
-            if (fabsf(deltaFromCenter) >= singleContentHeight) {
-                
-                CGFloat correction = (deltaFromCenter > 0)? deltaFromCenter - singleContentHeight : deltaFromCenter + singleContentHeight;
-                
-                currentOffset.y = contentCenteredY + correction;
-            }
-            break;
-        }
-    }
-    
-    self.contentOffset = currentOffset;
-}
-
-
-- (NSUInteger) normalizedIndexFromIndexPath:(NSIndexPath *)indexPath
-{
-    return indexPath.item % self.itemCount;
-}
-
-#pragma mark - UICollectionViewDatasource Methods
-
-
-- (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
-    self.itemCount = [self.dataSourceInterceptor.receiver numberOfItemsInCircularCollectionView:self];
-    
-    CGSize contentSize = CGSizeZero;
-    for (NSUInteger i = 0; i < self.itemCount; i++) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForItem:i inSection:0];
-        CGSize itemSize = [self collectionView:collectionView layout:collectionView.collectionViewLayout sizeForItemAtIndexPath:indexPath];
-        contentSize.height += itemSize.height;
-        contentSize.width += itemSize.width;
-    }
-    
-    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collectionView.collectionViewLayout;
-    switch (layout.scrollDirection)
+    switch (self.collectionViewLayout.scrollDirection)
     {
-        case UICollectionViewScrollDirectionHorizontal:
-            collectionView.scrollEnabled = contentSize.width >= collectionView.bounds.size.width;
-            break;
-        case UICollectionViewScrollDirectionVertical:
-            collectionView.scrollEnabled = contentSize.height >= collectionView.bounds.size.height;
-            break;
+        case UICollectionViewScrollDirectionHorizontal: return  contentSize.width < self.bounds.size.width;
+        case UICollectionViewScrollDirectionVertical: return contentSize.height < self.bounds.size.height;
+    }
+}
+
+- (CGSize) _calculateContentSize
+{
+    CGSize contentSize = CGSizeZero;
+    
+    if ([self.delegate respondsToSelector:@selector(collectionView:layout:sizeForItemAtIndexPath:)]) {
+        for (NSUInteger i = 0; i < _itemCount; i++) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForItem:i inSection:0];
+            CGSize itemSize = [self.delegate collectionView:self layout:self.collectionViewLayout sizeForItemAtIndexPath:indexPath];
+            contentSize.height += itemSize.height;
+            contentSize.width += itemSize.width;
+        }
+    }
+    else {
+        contentSize.height += self.collectionViewLayout.itemSize.height * _itemCount;
+        contentSize.width += self.collectionViewLayout.itemSize.width * _itemCount;
     }
     
-    self.shadowLayer.hidden = !collectionView.scrollEnabled;
-    return collectionView.scrollEnabled? self.itemCount * ContentMultiplier : self.itemCount;
-}
-
-- (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    NSUInteger normalizedIndex = [self normalizedIndexFromIndexPath:indexPath];
-    NSString *reuseIdentifier = [self.dataSourceInterceptor.receiver circularCollectionView:self reuseIdentifierForIndex:normalizedIndex];
-    UICollectionViewCell *cell = [self dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
-    [self.dataSourceInterceptor.receiver circularCollectionView:self configureCell:cell atIndex:normalizedIndex];
-    return cell;
-}
-
-
-#pragma mark - UICollectionViewDelegateFlowLayout Methods
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewFlowLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if ([self.delegateInterceptor.receiver respondsToSelector:@selector(collectionView:layout:sizeForItemAtIndexPath:)]) {
-        return [self.delegateInterceptor.receiver collectionView:collectionView layout:collectionViewLayout sizeForItemAtIndexPath:indexPath];
-    }
-    return collectionViewLayout.itemSize;
-}
-
-#pragma mark - UIScrollViewDelegate Methods
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    if (self.shadowRadius) {
-        [CATransaction begin];
-        [CATransaction setDisableActions:YES];
-        self.shadowLayer.position = scrollView.contentOffset;
-        [CATransaction commit];
-    }
-    
-    if ([self.delegateInterceptor.receiver respondsToSelector:@selector(scrollViewDidScroll:)]) {
-        [self.delegateInterceptor.receiver scrollViewDidScroll:scrollView];
-    }
+    return contentSize;
 }
 
 @end

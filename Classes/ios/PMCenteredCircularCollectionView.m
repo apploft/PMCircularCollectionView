@@ -10,8 +10,12 @@
 #import "PMUtils.h"
 
 @interface PMCenteredCircularCollectionView ()
-@property (nonatomic, weak) id <PMCircularCollectionViewDataSource> pmDataSource;
-@property (nonatomic, weak) id <PMCenteredCircularCollectionViewDelegate> pmDelegate;
+{
+    id<PMCenteredCircularCollectionViewDelegate> _originalDelegate;
+    BOOL _delegateRespondsToDidCenterItemAtIndex;
+    BOOL _delegateRespondsToDidSelectItemAtIndexPath;
+    BOOL _delegateRespondsToScrollViewDidEndDecelerating;
+}
 @end
 
 @implementation PMCenteredCircularCollectionView
@@ -23,7 +27,10 @@
 
 - (instancetype) initWithFrame:(CGRect)frame collectionViewLayout:(PMCenteredCollectionViewFlowLayout *)layout
 {
-    return [super initWithFrame:frame collectionViewLayout:layout];
+    self = [super initWithFrame:frame collectionViewLayout:layout];
+    if (self) {
+    }
+    return self;
 }
 
 - (void) centerCell:(UICollectionViewCell *)cell animated:(BOOL)animated;
@@ -32,21 +39,9 @@
     [self centerCellAtIndex:indexPath.item animated:animated];
 }
 
-- (void) setDataSource:(id<PMCircularCollectionViewDataSource>)dataSource
-{
-    [super setDataSource:dataSource];
-    self.pmDataSource = dataSource;
-}
-
-- (void) setDelegate:(id<PMCenteredCircularCollectionViewDelegate>)delegate
-{
-    [super setDelegate:delegate];
-    self.pmDelegate = delegate;
-}
-
 - (void) centerCellAtIndex:(NSUInteger)index animated:(BOOL)animated
 {
-    NSInteger itemCount = [self.pmDataSource numberOfItemsInCircularCollectionView:self];
+    NSInteger itemCount = [self.dataSource collectionView:self numberOfItemsInSection:0];
     
     if (index < itemCount) {
         
@@ -54,7 +49,7 @@
             [self layoutSubviews];
         }
         
-        NSIndexPath *indexPathAtMiddle = [self indexPathAtMiddle];
+        NSIndexPath *indexPathAtMiddle = [self _indexPathAtMiddle];
         
         if (indexPathAtMiddle) {
             
@@ -75,43 +70,13 @@
     }
 }
 
-- (NSIndexPath *) indexPathAtMiddle
+- (void) setDelegate:(id<PMCenteredCircularCollectionViewDelegate>)delegate
 {
-    if (self.visibleCells.count) {
-        return [self visibleIndexPathNearestToPoint:[self contentOffsetInBoundsCenter]];
-    }
-    else {
-        return [self indexPathNearestToPoint:[self contentOffsetInBoundsCenter]];
-    }
-}
-
-- (void) centerNearestIndexPath
-{
-    // Find index path of closest cell. Do not use -indexPathForItemAtPoint:
-    // because this method returns nil if the specified point lands in the spacing between cells.
-    
-    NSIndexPath *indexPath = [self indexPathAtMiddle];
-    
-    [self centerIndexPath:indexPath];
-}
-
-- (void) centerIndexPath:(NSIndexPath *)indexPath
-{
-    [self scrollToItemAtIndexPath:indexPath
-                 atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally | UICollectionViewScrollPositionCenteredVertically
-                         animated:YES];
-    
-    if ([self.pmDelegate respondsToSelector:@selector(collectionView:didCenterItemAtIndex:)]) {
-        [self.pmDelegate collectionView:self didCenterItemAtIndex:[self normalizedIndexFromIndexPath:indexPath]];
-    }
-}
-
-- (CGPoint) contentOffsetInBoundsCenter
-{
-    CGPoint middlePoint = self.contentOffset;
-    middlePoint.x += self.bounds.size.width / 2.0f;
-    middlePoint.y += self.bounds.size.height / 2.0f;
-    return middlePoint;
+    [super setDelegate:delegate];
+    _originalDelegate = delegate;
+    _delegateRespondsToScrollViewDidEndDecelerating = [delegate respondsToSelector:@selector(scrollViewDidEndDecelerating:)];
+    _delegateRespondsToDidSelectItemAtIndexPath = [delegate respondsToSelector:@selector(collectionView:didSelectItemAtIndexPath:)];
+    _delegateRespondsToDidCenterItemAtIndex = [delegate respondsToSelector:@selector(collectionView:didCenterItemAtIndex:)];
 }
 
 
@@ -120,29 +85,53 @@
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-    [self centerNearestIndexPath];
-    
-    if ([[self superclass] instancesRespondToSelector:@selector(scrollViewDidEndDecelerating:)]) {
-        [super scrollViewDidEndDecelerating:scrollView];
-    }
-    else if ([self.pmDelegate respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
-        [self.pmDelegate scrollViewDidEndDecelerating:scrollView];
+    NSIndexPath *indexPath = [self _indexPathAtMiddle];
+    [self _centerIndexPath:indexPath];
+
+    if (_delegateRespondsToScrollViewDidEndDecelerating) {
+        [_originalDelegate scrollViewDidEndDecelerating:scrollView];
     }
 }
 
 
 #pragma mark - UICollectionViewDelegate Methods
 
+
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self centerIndexPath:indexPath];
+    [self _centerIndexPath:indexPath];
     
-    if ([[self superclass] instancesRespondToSelector:@selector(collectionView:didSelectItemAtIndexPath:)]) {
-        [super collectionView:collectionView didSelectItemAtIndexPath:indexPath];
-    }
-    else if ([self.pmDelegate respondsToSelector:@selector(collectionView:didSelectItemAtIndexPath:)]) {
-        [self.pmDelegate collectionView:collectionView didSelectItemAtIndexPath:indexPath];
+    if (_delegateRespondsToDidSelectItemAtIndexPath) {
+        [_originalDelegate collectionView:collectionView didSelectItemAtIndexPath:indexPath];
     }
 }
+
+
+#pragma mark - Private Methods
+
+
+- (NSIndexPath *) _indexPathAtMiddle
+{
+    CGPoint contentOffset = [self contentOffsetInBoundsCenter];
+    
+    switch (self.visibleCells.count) {
+        case 0: return [self indexPathNearestToPoint:contentOffset];
+        default: return [self visibleIndexPathNearestToPoint:contentOffset];
+    }
+}
+
+- (void) _centerIndexPath:(NSIndexPath *)indexPath
+{
+    [self scrollToItemAtIndexPath:indexPath
+                 atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally | UICollectionViewScrollPositionCenteredVertically
+                         animated:YES];
+
+    if (_delegateRespondsToDidCenterItemAtIndex) {
+        [_originalDelegate collectionView:self didCenterItemAtIndex:indexPath.item];
+    }
+    
+
+}
+
 
 @end
