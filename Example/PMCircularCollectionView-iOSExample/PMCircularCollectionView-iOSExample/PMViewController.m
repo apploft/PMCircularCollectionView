@@ -12,7 +12,7 @@
 
 static NSString * const PMCellReuseIdentifier = @"PMCellReuseIdentifier";
 
-@interface PMViewController () <UICollectionViewDelegate, UIScrollViewDelegate, PMCircularCollectionViewDataSource>
+@interface PMViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
 @property (nonatomic, strong) PMCenteredCircularCollectionView *collectionView;
 @property (nonatomic, strong) UIView *viewToScrollTo;
@@ -76,19 +76,16 @@ static NSString * const PMCellReuseIdentifier = @"PMCellReuseIdentifier";
 
 #pragma mark - PMCircularCollectionViewDataSource Methods
 
-- (NSString *) circularCollectionView:(PMCircularCollectionView *)collectionView reuseIdentifierForIndex:(NSUInteger)index
+- (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return PMCellReuseIdentifier;
+    return (NSInteger)self.images.count;
 }
 
-- (NSUInteger) numberOfItemsInCircularCollectionView:(PMCircularCollectionView *)collectionView
+- (UICollectionViewCell *) collectionView:(PMCenteredCircularCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    return self.images.count;
-}
-
-- (void) circularCollectionView:(PMCircularCollectionView *)collectionView configureCell:(UICollectionViewCell *)cell atIndex:(NSUInteger)index
-{
-    if (![cell.contentView.subviews.lastObject isKindOfClass:[UIImageView class]]   ) {
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:PMCellReuseIdentifier forIndexPath:indexPath];
+    NSUInteger normalizedIndex = [collectionView normalizeIndexFromIndexPath:indexPath];
+    if (![cell.contentView.subviews.lastObject isKindOfClass:[UIImageView class]]) {
         UIImageView *imageView = [[UIImageView alloc] initWithFrame:cell.contentView.bounds];
         imageView.contentMode = UIViewContentModeCenter;
         imageView.clipsToBounds = YES;
@@ -96,7 +93,8 @@ static NSString * const PMCellReuseIdentifier = @"PMCellReuseIdentifier";
     }
     
     UIImageView *imageView = cell.contentView.subviews.lastObject;
-    imageView.image = self.images[index];
+    imageView.image = self.images[normalizedIndex];
+    return cell;
 }
 
 @end
