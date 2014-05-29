@@ -13,6 +13,8 @@
 @property (nonatomic) CGFloat shadowRadius;
 @property (nonatomic, strong) UIColor *shadowColor;
 @property (nonatomic) BOOL circularDisabled;
+- (BOOL) circularActive;
+
 
 // Overwrite Type for flow layouts
 @property (nonatomic, retain) UICollectionViewFlowLayout *collectionViewLayout;
