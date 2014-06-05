@@ -84,7 +84,7 @@ static NSString * const PMCellReuseIdentifier = @"PMCellReuseIdentifier";
 - (UICollectionViewCell *) collectionView:(PMCenteredCircularCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:PMCellReuseIdentifier forIndexPath:indexPath];
-    NSUInteger normalizedIndex = [collectionView normalizeIndexFromIndexPath:indexPath];
+    NSInteger normalizedIndex = [collectionView normalizeIndex:indexPath.item];
     if (![cell.contentView.subviews.lastObject isKindOfClass:[UIImageView class]]) {
         UIImageView *imageView = [[UIImageView alloc] initWithFrame:cell.contentView.bounds];
         imageView.contentMode = UIViewContentModeCenter;
@@ -93,7 +93,7 @@ static NSString * const PMCellReuseIdentifier = @"PMCellReuseIdentifier";
     }
     
     UIImageView *imageView = cell.contentView.subviews.lastObject;
-    imageView.image = self.images[normalizedIndex];
+    imageView.image = self.images[(NSUInteger)normalizedIndex];
     return cell;
 }
 

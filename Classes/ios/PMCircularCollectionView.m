@@ -79,6 +79,9 @@ static NSUInteger const ContentMultiplier = 4;
     _dataSourceInterceptor = [PMProtocolInterceptor interceptorWithMiddleMan:self forProtocol:@protocol(UICollectionViewDataSource)];
     [super setDataSource:(id)_dataSourceInterceptor];
     
+	_shadowLayer = [CAGradientLayer layer];
+	[self.layer addSublayer:_shadowLayer];
+	
     self.showsHorizontalScrollIndicator = NO;
     self.showsVerticalScrollIndicator = NO;
 }
@@ -88,6 +91,12 @@ static NSUInteger const ContentMultiplier = 4;
 - (void)layoutSubviews {
     [super layoutSubviews];
     [self _recenterIfNecessary];
+}
+
+- (void) setFrame:(CGRect)frame
+{
+	[super setFrame:frame];
+	[self _resetShadowLayer];
 }
 
 
@@ -131,14 +140,17 @@ static NSUInteger const ContentMultiplier = 4;
 
 - (void) setCircularDisabled:(BOOL)circularDisabled
 {
-    _explicitlyDisabled = circularDisabled;
-    _shadowLayer.hidden = ![self circularActive];
+	if (_explicitlyDisabled != circularDisabled) {
+		_explicitlyDisabled = circularDisabled;
+		[self _resetShadowLayer];
+		[self reloadData];
+	}
 }
 
 - (void) setCircularImplicitlyDisabled:(BOOL)circularImplicitlyDisabled
 {
     _circularImplicitlyDisabled = circularImplicitlyDisabled;
-    _shadowLayer.hidden = ![self circularActive];
+	[self _resetShadowLayer];
 }
 
 
@@ -150,9 +162,9 @@ static NSUInteger const ContentMultiplier = 4;
     return !_explicitlyDisabled && !_circularImplicitlyDisabled;
 }
 
-- (NSUInteger) normalizeIndexFromIndexPath:(NSIndexPath *)indexPath
+- (NSInteger) normalizeIndex:(NSInteger)index
 {
-    return indexPath.item % _itemCount;
+    return _itemCount? index % _itemCount : 0;
 }
 
 #pragma mark - UICollectionViewDatasource Methods
@@ -178,7 +190,7 @@ static NSUInteger const ContentMultiplier = 4;
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    if (self.shadowRadius && self.shadowColor) {
+    if (_shadowLayer.hidden == NO) {
         [CATransaction begin];
         [CATransaction setDisableActions:YES];
         _shadowLayer.position = scrollView.contentOffset;
@@ -237,19 +249,16 @@ static NSUInteger const ContentMultiplier = 4;
 
 - (void) _resetShadowLayer
 {
-    [_shadowLayer removeFromSuperlayer];
-    _shadowLayer = nil;
-    
-    if (self.shadowRadius && self.shadowColor.alpha) {
+    if (self.shadowRadius && self.shadowColor.alpha && [self circularActive]) {
         
         UIColor *outerColor = self.shadowColor;
         UIColor *innerColor = [self.shadowColor colorWithAlphaComponent:0.0];
         
-        _shadowLayer = [CAGradientLayer layer];
         _shadowLayer.frame = self.bounds;
         _shadowLayer.colors = @[(id)outerColor.CGColor, (id)innerColor.CGColor, (id)innerColor.CGColor, (id)outerColor.CGColor];
         _shadowLayer.anchorPoint = CGPointZero;
-        
+        _shadowLayer.position = self.contentOffset;
+		
         CGFloat totalDistance;
         switch (self.collectionViewLayout.scrollDirection) {
                 
@@ -269,9 +278,11 @@ static NSUInteger const ContentMultiplier = 4;
         CGFloat location1 = self.shadowRadius / totalDistance;
         CGFloat location2 = 1.0f - location1;
         _shadowLayer.locations = @[@0.0, @(location1), @(location2), @1.0];
-        
-        [self.layer addSublayer:_shadowLayer];
+		_shadowLayer.hidden = NO;
     }
+	else {
+		_shadowLayer.hidden = YES;
+	}
 }
 
 - (BOOL) _disableCircularInternallyBasedOnContentSize
