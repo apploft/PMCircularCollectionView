@@ -34,20 +34,6 @@
 }
 
 
-#pragma mark - Overwritten Methods
-
-
-- (void) willMoveToSuperview:(UIView *)newSuperview
-{
-	if (newSuperview) {
-		if (CGSizeEqualToSize(CGSizeZero, self.contentSize)) {
-			[self layoutSubviews];
-		}
-		NSIndexPath *indexPath = [self _indexPathAtMiddle];
-		[self _centerIndexPath:indexPath animated:NO];
-	}
-}
-
 #pragma mark - Accessors
 
 
@@ -73,30 +59,33 @@
 }
 
 - (void) centerCellAtIndex:(NSUInteger)index animated:(BOOL)animated
-{
+{	
     if ([self circularActive]) {
-        
-        NSInteger itemCount = [self.dataSource collectionView:self numberOfItemsInSection:0];
-        
-        if (index < itemCount) {
-            
-            NSIndexPath *indexPathAtMiddle = [self _indexPathAtMiddle];
-            
-            if (indexPathAtMiddle) {
-                
-                NSInteger originalIndexOfMiddle = indexPathAtMiddle.item % itemCount;
-                
-                NSRange range = NSMakeRange(0, itemCount);
+		
+		if (CGSizeEqualToSize(CGSizeZero, self.contentSize)) {
+		
+			[self layoutSubviews];
+		}
+		
+		if (index < self.itemCount) {
+		
+			NSIndexPath *indexPathAtMiddle = [self _indexPathAtMiddle];
+			
+			if (indexPathAtMiddle) {
+				
+				NSInteger originalIndexOfMiddle = indexPathAtMiddle.item % self.itemCount;
+				
+				NSRange range = NSMakeRange(0, self.itemCount);
 
-                NSInteger delta = PMShortestCircularDistance(originalIndexOfMiddle, index, range);
-                
-                NSInteger toItem = indexPathAtMiddle.item + delta;
-                
-                NSIndexPath *toIndexPath = [NSIndexPath indexPathForItem:toItem inSection:0];
-                
-                [self _centerIndexPath:toIndexPath animated:animated];
-            }
-        }
+				NSInteger delta = PMShortestCircularDistance(originalIndexOfMiddle, index, range);
+				
+				NSInteger toItem = indexPathAtMiddle.item + delta;
+				
+				NSIndexPath *toIndexPath = [NSIndexPath indexPathForItem:toItem inSection:0];
+				
+				[self _centerIndexPath:toIndexPath animated:animated];
+			}
+		}
     }
 }
 
