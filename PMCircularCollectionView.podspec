@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "PMCircularCollectionView"
-  s.version          = "0.0.28"
+  s.version          = "0.0.29"
   s.summary          = "Demonstrates how a UICollectionView subclass can scroll infinitely in the horizontal or vertical direction."
   s.homepage         = "https://github.com/petermeyers1/#{s.name}"
   s.license          = 'MIT'
