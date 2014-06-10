@@ -38,25 +38,17 @@ static NSString * const PMCellReuseIdentifier = @"PMCellReuseIdentifier";
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     layout.minimumLineSpacing = 10.0f; // Vertical Spacing
     layout.minimumInteritemSpacing = 10.0f; // Horizontal Spacing
-    layout.itemSize = frame.size;
+	CGFloat minDimension = fminf(self.view.bounds.size.width, self.view.bounds.size.height);
+    layout.itemSize = CGSizeMake(minDimension, minDimension);
     
     self.collectionView = [[PMCenteredCircularCollectionView alloc] initWithFrame:frame
                                                              collectionViewLayout:layout];
     
     self.collectionView.backgroundColor = [UIColor whiteColor];
+	self.collectionView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     self.collectionView.shadowRadius = 10.0f;
     [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:PMCellReuseIdentifier];
     [self.collectionView setDataSource:self];
-
-    
-//    self.viewToScrollTo = [self labelWithString:@"label 1"];
-//    
-//    self.collectionView.views = @[[self labelWithString:@"label 0"],
-//                                  self.viewToScrollTo,
-//                                  [self labelWithString:@"label 2"],
-//                                  [self labelWithString:@"label 3"],
-//                                  [self labelWithString:@"label 4"],
-//                                  [self labelWithString:@"label 5"]];
     
     [self.view addSubview:self.collectionView];
 }
