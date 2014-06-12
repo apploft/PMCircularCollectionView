@@ -1,36 +1,50 @@
+// Copyright (c) 2013-2014 Peter Meyers
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 //
 //  PMViewController.m
-//  PMPMInfiniteScrollView-iOSExample
-//
 //  Created by Peter Meyers on 3/19/14.
-//  Copyright (c) 2014 Peter Meyers. All rights reserved.
 //
 
 #import "PMViewController.h"
 #import "PMCenteredCircularCollectionView.h"
-#import "PMUtils.h"
 
 static NSString * const PMCellReuseIdentifier = @"PMCellReuseIdentifier";
 
 @interface PMViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
-
-@property (nonatomic, strong) PMCenteredCircularCollectionView *collectionView;
-@property (nonatomic, strong) UIView *viewToScrollTo;
-@property (nonatomic, strong) NSArray *images;
-
 @end
 
 @implementation PMViewController
+{
+	PMCenteredCircularCollectionView *_collectionView;
+	NSArray *_images;
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    UIImage *pg = [UIImage imageNamed:@"pg.jpg"];
-    UIImage *kobe = [UIImage imageNamed:@"kobe.jpg"];
-    UIImage *lj = [UIImage imageNamed:@"lj.jpg"];
-    UIImage *cp = [UIImage imageNamed:@"cp.jpg"];
-    self.images = @[pg, kobe, lj, cp];
+    _images = @[[UIImage imageNamed:@"stock_photo1.jpg"],
+				[UIImage imageNamed:@"stock_photo2.jpg"],
+				[UIImage imageNamed:@"stock_photo3.jpg"],
+				[UIImage imageNamed:@"stock_photo4.jpg"],
+				[UIImage imageNamed:@"stock_photo5.jpg"]];
     
     CGRect frame = self.view.bounds;
     
@@ -41,43 +55,35 @@ static NSString * const PMCellReuseIdentifier = @"PMCellReuseIdentifier";
 	CGFloat minDimension = fminf(self.view.bounds.size.width, self.view.bounds.size.height);
     layout.itemSize = CGSizeMake(minDimension, minDimension);
     
-    self.collectionView = [[PMCenteredCircularCollectionView alloc] initWithFrame:frame
+    _collectionView = [[PMCenteredCircularCollectionView alloc] initWithFrame:frame
                                                              collectionViewLayout:layout];
     
-    self.collectionView.backgroundColor = [UIColor whiteColor];
-	self.collectionView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    self.collectionView.shadowRadius = 10.0f;
-    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:PMCellReuseIdentifier];
-    [self.collectionView setDataSource:self];
+    _collectionView.backgroundColor = [UIColor whiteColor];
+	_collectionView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    _collectionView.shadowRadius = 10.0f;
+    [_collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:PMCellReuseIdentifier];
+    [_collectionView setDataSource:self];
     
-    [self.view addSubview:self.collectionView];
+    [self.view addSubview:_collectionView];
 }
 
 - (void) viewDidAppear:(BOOL)animated
 {
-    [self.collectionView centerCellAtIndex:2 animated:YES];
-}
-
-- (UILabel *)labelWithString:(NSString *)string
-{
-    UILabel *label = [UILabel new];
-    label.text = string;
-    [label sizeToFit];
-    return label;
+    [_collectionView centerCellAtIndex:2 animated:YES];
 }
 
 #pragma mark - PMCircularCollectionViewDataSource Methods
 
 - (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return (NSInteger)self.images.count;
+    return (NSInteger)_images.count;
 }
 
 - (UICollectionViewCell *) collectionView:(PMCenteredCircularCollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:PMCellReuseIdentifier forIndexPath:indexPath];
     NSInteger normalizedIndex = [collectionView normalizeIndex:indexPath.item];
-    if (![cell.contentView.subviews.lastObject isKindOfClass:[UIImageView class]]) {
+    if (!cell.contentView.subviews.count) {
         UIImageView *imageView = [[UIImageView alloc] initWithFrame:cell.contentView.bounds];
         imageView.contentMode = UIViewContentModeCenter;
         imageView.clipsToBounds = YES;
@@ -85,7 +91,7 @@ static NSString * const PMCellReuseIdentifier = @"PMCellReuseIdentifier";
     }
     
     UIImageView *imageView = cell.contentView.subviews.lastObject;
-    imageView.image = self.images[(NSUInteger)normalizedIndex];
+    imageView.image = _images[(NSUInteger)normalizedIndex];
     return cell;
 }
 
