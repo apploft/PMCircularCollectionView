@@ -1,7 +1,22 @@
 PODS:
-  - PMCircularCollectionView (0.0.23):
+  - PMCircularCollectionView (0.0.30):
     - PMUtils
-  - PMUtils (0.0.46)
+  - PMUtils (0.0.54):
+    - PMUtils/Foundation+PMUtils
+    - PMUtils/PMAnimationQueue
+    - PMUtils/PMImageFilmstrip
+    - PMUtils/PMOrderedDictionary
+    - PMUtils/PMPair
+    - PMUtils/PMProtocolInterceptor
+    - PMUtils/UIKit+PMUtils
+  - PMUtils/Foundation+PMUtils (0.0.54)
+  - PMUtils/PMAnimationQueue (0.0.54)
+  - PMUtils/PMImageFilmstrip (0.0.54):
+    - PMUtils/UIKit+PMUtils
+  - PMUtils/PMOrderedDictionary (0.0.54)
+  - PMUtils/PMPair (0.0.54)
+  - PMUtils/PMProtocolInterceptor (0.0.54)
+  - PMUtils/UIKit+PMUtils (0.0.54)
 
 DEPENDENCIES:
   - PMCircularCollectionView (from `../PMCircularCollectionView.podspec`)
@@ -11,7 +26,7 @@ EXTERNAL SOURCES:
     :path: ../PMCircularCollectionView.podspec
 
 SPEC CHECKSUMS:
-  PMCircularCollectionView: 60b88a45bd6b6a349b2852ef2d97f38f7490db0d
-  PMUtils: d63d08d739c2c59dacfe77a81bb36c42b9430415
+  PMCircularCollectionView: b90087d28092a126537dec2bca26712d14bbf6d0
+  PMUtils: 9398cc3e349c358ef07c658455cadea0cabe9b04
 
 COCOAPODS: 0.33.1
