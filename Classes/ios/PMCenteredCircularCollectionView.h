@@ -41,10 +41,12 @@
 
 // Overwrite Type
 @property (nonatomic, retain) PMCenteredCollectionViewFlowLayout *collectionViewLayout;
-@property (nonatomic, assign) id <PMCenteredCircularCollectionViewDelegate> delegate;
+@property (nonatomic, weak) id <PMCenteredCircularCollectionViewDelegate> delegate;
 
-- (void) centerCell:(UICollectionViewCell *)cell animated:(BOOL)animated;
-- (void) centerCellAtIndex:(NSUInteger)index animated:(BOOL)animated;
+@property (nonatomic) NSUInteger centeredIndex;
+
+- (void) setCenteredIndex:(NSUInteger)centeredIndex animated:(BOOL)aniamted;
+- (void) setCenteredCell:(UICollectionViewCell *)cell animated:(BOOL)animated;
 
 + (instancetype) collectionViewWithFrame:(CGRect)frame collectionViewLayout:(PMCenteredCollectionViewFlowLayout *)layout;
 - (instancetype) initWithFrame:(CGRect)frame collectionViewLayout:(PMCenteredCollectionViewFlowLayout *)layout;

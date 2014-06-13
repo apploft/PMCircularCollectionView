@@ -24,6 +24,7 @@
 //
 
 #import "PMCenteredCollectionViewFlowLayout.h"
+#import "PMCenteredCircularCollectionView.h"
 #import "PMUtils.h"
 
 @implementation PMCenteredCollectionViewFlowLayout
@@ -54,6 +55,5 @@
 
     return [super targetContentOffsetForProposedContentOffset:proposedContentOffset withScrollingVelocity:velocity];
 }
-
 
 @end

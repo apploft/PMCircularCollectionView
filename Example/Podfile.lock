@@ -1,7 +1,7 @@
 PODS:
-  - PMCircularCollectionView (0.0.30):
+  - PMCircularCollectionView (0.0.31):
     - PMUtils
-  - PMUtils (0.0.54):
+  - PMUtils (0.0.56):
     - PMUtils/Foundation+PMUtils
     - PMUtils/PMAnimationQueue
     - PMUtils/PMImageFilmstrip
@@ -9,14 +9,14 @@ PODS:
     - PMUtils/PMPair
     - PMUtils/PMProtocolInterceptor
     - PMUtils/UIKit+PMUtils
-  - PMUtils/Foundation+PMUtils (0.0.54)
-  - PMUtils/PMAnimationQueue (0.0.54)
-  - PMUtils/PMImageFilmstrip (0.0.54):
+  - PMUtils/Foundation+PMUtils (0.0.56)
+  - PMUtils/PMAnimationQueue (0.0.56)
+  - PMUtils/PMImageFilmstrip (0.0.56):
     - PMUtils/UIKit+PMUtils
-  - PMUtils/PMOrderedDictionary (0.0.54)
-  - PMUtils/PMPair (0.0.54)
-  - PMUtils/PMProtocolInterceptor (0.0.54)
-  - PMUtils/UIKit+PMUtils (0.0.54)
+  - PMUtils/PMOrderedDictionary (0.0.56)
+  - PMUtils/PMPair (0.0.56)
+  - PMUtils/PMProtocolInterceptor (0.0.56)
+  - PMUtils/UIKit+PMUtils (0.0.56)
 
 DEPENDENCIES:
   - PMCircularCollectionView (from `../PMCircularCollectionView.podspec`)
@@ -26,7 +26,7 @@ EXTERNAL SOURCES:
     :path: ../PMCircularCollectionView.podspec
 
 SPEC CHECKSUMS:
-  PMCircularCollectionView: b90087d28092a126537dec2bca26712d14bbf6d0
-  PMUtils: 9398cc3e349c358ef07c658455cadea0cabe9b04
+  PMCircularCollectionView: c614fcc4780da9fa282581c70262c3d7bd15b0dd
+  PMUtils: 83c3267bba01155224ed8d88e7410439fdafb158
 
 COCOAPODS: 0.33.1

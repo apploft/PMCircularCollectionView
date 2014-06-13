@@ -48,33 +48,6 @@
     return self;
 }
 
-- (void) layoutSubviews
-{
-	CGSize previousContentSize = self.contentSize;
-	NSIndexPath *indexPathAtMiddle = [self _indexPathAtMiddle];
-	
-	[super layoutSubviews];
-	
-	if (!CGSizeEqualToSize(previousContentSize, self.contentSize)) {
-		if (!indexPathAtMiddle) {
-			indexPathAtMiddle = [self _indexPathAtMiddle];
-		}
-		[self _centerIndexPath:indexPathAtMiddle animated:NO notifyDelegate:CGSizeEqualToSize(previousContentSize, CGSizeZero)];
-	}
-}
-
-- (void) setFrame:(CGRect)frame
-{
-	CGRect previousFrame = self.frame;
-	NSIndexPath *indexPathAtMiddle = [self _indexPathAtMiddle];
-	
-	[super setFrame:frame];
-	
-	if (indexPathAtMiddle && !CGRectEqualToRect(previousFrame, self.frame)) {
-		[self _centerIndexPath:indexPathAtMiddle animated:NO notifyDelegate:NO];
-	}
-}
-
 
 #pragma mark - Accessors
 
@@ -92,38 +65,44 @@
 #pragma mark - Public Methods
 
 
-- (void) centerCell:(UICollectionViewCell *)cell animated:(BOOL)animated;
+- (void) setCenteredCell:(UICollectionViewCell *)cell animated:(BOOL)animated;
 {
-    if ([self circularActive]) {
-        NSIndexPath *indexPath = [self indexPathForCell:cell];
-        [self centerCellAtIndex:indexPath.item animated:animated];
-    }
+	NSIndexPath *indexPath = [self indexPathForCell:cell];
+
+	if (indexPath) {
+		[self setCenteredIndex:indexPath.item animated:animated];
+	}
 }
 
-- (void) centerCellAtIndex:(NSUInteger)index animated:(BOOL)animated
-{	
-    if ([self circularActive] && index < self.itemCount) {
-			
-		if (CGSizeEqualToSize(CGSizeZero, self.contentSize)) {
-		
-			[self layoutSubviews];
-		}
-		
-		NSIndexPath *indexPathAtMiddle = [self _indexPathAtMiddle];
-		
-		if (indexPathAtMiddle) {
-			
-			NSInteger originalIndexOfMiddle = indexPathAtMiddle.item % self.itemCount;
-			
-			NSRange range = NSMakeRange(0, self.itemCount);
+- (void) setCenteredIndex:(NSUInteger)centeredIndex
+{
+	[self setCenteredIndex:centeredIndex animated:NO];
+}
 
-			NSInteger delta = PMShortestCircularDistance(originalIndexOfMiddle, index, range);
+- (void) setCenteredIndex:(NSUInteger)centeredIndex animated:(BOOL)animated
+{	
+    if ([self circularActive]) {
+
+		[self layoutIfNeeded];
+		
+		if (centeredIndex < self.itemCount) {
+				
+			NSIndexPath *indexPathNearestToBoundsCenter = [self indexPathNearestToBoundsCenter];
 			
-			NSInteger toItem = indexPathAtMiddle.item + delta;
-			
-			NSIndexPath *toIndexPath = [NSIndexPath indexPathForItem:toItem inSection:0];
-			
-			[self _centerIndexPath:toIndexPath animated:animated notifyDelegate:YES];
+			if (indexPathNearestToBoundsCenter) {
+				
+				NSInteger normalizedIndexAtMiddle = [self normalizeIndex:indexPathNearestToBoundsCenter.item];
+				
+				NSRange range = NSMakeRange(0, self.itemCount);
+
+				NSInteger delta = PMShortestCircularDistance(normalizedIndexAtMiddle, centeredIndex, range);
+				
+				NSInteger toItem = indexPathNearestToBoundsCenter.item + delta;
+				
+				NSIndexPath *toIndexPath = [NSIndexPath indexPathForItem:toItem inSection:0];
+				
+				[self _centerIndexPath:toIndexPath animated:animated notifyDelegate:YES];
+			}
 		}
 	}
 }
@@ -134,8 +113,8 @@
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-    NSIndexPath *indexPath = [self _indexPathAtMiddle];
-    [self _centerIndexPath:indexPath animated:YES notifyDelegate:YES];
+    NSIndexPath *indexPathNearestToBoundsCenter = [self indexPathNearestToBoundsCenter];
+    [self _centerIndexPath:indexPathNearestToBoundsCenter animated:YES notifyDelegate:YES];
 
     if (_delegateRespondsToScrollViewDidEndDecelerating) {
         [_originalDelegate scrollViewDidEndDecelerating:scrollView];
@@ -159,31 +138,29 @@
 #pragma mark - Private Methods
 
 
-- (NSIndexPath *) _indexPathAtMiddle
-{
-	if (!CGSizeEqualToSize(CGSizeZero, self.contentSize)) {
-		CGPoint contentOffset = [self contentOffsetInBoundsCenter];
-		
-		switch (self.visibleCells.count) {
-			case 0: return [self indexPathNearestToPoint:contentOffset];
-			default: return [self visibleIndexPathNearestToPoint:contentOffset];
-		}
-	}
-	return nil;
-}
-
 - (void) _centerIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated notifyDelegate:(BOOL)notifyDelegate
 {
+	NSParameterAssert(indexPath);
+	
     if ([self circularActive]) {
-        [self scrollToItemAtIndexPath:indexPath
-                     atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally | UICollectionViewScrollPositionCenteredVertically
-                             animated:animated];
-        
-        if (notifyDelegate && _delegateRespondsToDidCenterItemAtIndex) {
-            [_originalDelegate collectionView:self didCenterItemAtIndex:indexPath.item];
-        }
+		
+		_centeredIndex = [self normalizeIndex:indexPath.item];
+		
+		[self scrollToItemAtIndexPath:indexPath
+					 atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally | UICollectionViewScrollPositionCenteredVertically
+							 animated:animated];
+		
+		if (notifyDelegate && _delegateRespondsToDidCenterItemAtIndex) {
+			[_originalDelegate collectionView:self didCenterItemAtIndex:_centeredIndex];
+		}
     }
 }
 
+- (CGPoint) _contentOffsetForCenteredOffset:(CGPoint)centeredOffset
+{
+	centeredOffset.x = floorf(centeredOffset.x - self.bounds.size.width/2.0f);
+	centeredOffset.y = floorf(centeredOffset.y - self.bounds.size.height/2.0f);
+	return centeredOffset;
+}
 
 @end

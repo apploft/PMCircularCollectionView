@@ -69,7 +69,7 @@ static NSString * const PMCellReuseIdentifier = @"PMCellReuseIdentifier";
 
 - (void) viewDidAppear:(BOOL)animated
 {
-    [_collectionView centerCellAtIndex:2 animated:YES];
+    [_collectionView setCenteredIndex:2 animated:YES];
 }
 
 #pragma mark - PMCircularCollectionViewDataSource Methods

@@ -25,8 +25,10 @@
 
 #import <UIKit/UIKit.h>
 
+@class PMCenteredCircularCollectionView;
 @interface PMCenteredCollectionViewFlowLayout : UICollectionViewFlowLayout
 
 @property (nonatomic) BOOL centeringDisabled;
+@property (nonatomic, readonly) PMCenteredCircularCollectionView *collectionView;
 
 @end
