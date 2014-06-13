@@ -50,8 +50,8 @@ static NSString * const PMCellReuseIdentifier = @"PMCellReuseIdentifier";
     
     PMCenteredCollectionViewFlowLayout *layout = [PMCenteredCollectionViewFlowLayout new];
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    layout.minimumLineSpacing = 10.0f; // Vertical Spacing
-    layout.minimumInteritemSpacing = 10.0f; // Horizontal Spacing
+    layout.minimumLineSpacing = 10.0f;
+    layout.minimumInteritemSpacing = 50.0f;
 	CGFloat minDimension = fminf(self.view.bounds.size.width, self.view.bounds.size.height);
     layout.itemSize = CGSizeMake(minDimension, minDimension);
     
