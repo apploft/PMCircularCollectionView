@@ -1,0 +1,555 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		6780A79C1949676C006A7DAD /* stock_photo1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6780A7971949676C006A7DAD /* stock_photo1.jpg */; };
+		6780A79D1949676C006A7DAD /* stock_photo2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6780A7981949676C006A7DAD /* stock_photo2.jpg */; };
+		6780A79E1949676C006A7DAD /* stock_photo3.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6780A7991949676C006A7DAD /* stock_photo3.jpg */; };
+		6780A79F1949676C006A7DAD /* stock_photo4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6780A79A1949676C006A7DAD /* stock_photo4.jpg */; };
+		6780A7A01949676C006A7DAD /* stock_photo5.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6780A79B1949676C006A7DAD /* stock_photo5.jpg */; };
+		74A36A9818DAC895001013CD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74A36A9718DAC895001013CD /* Foundation.framework */; };
+		74A36A9A18DAC895001013CD /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74A36A9918DAC895001013CD /* CoreGraphics.framework */; };
+		74A36A9C18DAC895001013CD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74A36A9B18DAC895001013CD /* UIKit.framework */; };
+		74A36AA218DAC895001013CD /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 74A36AA018DAC895001013CD /* InfoPlist.strings */; };
+		74A36AA418DAC895001013CD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 74A36AA318DAC895001013CD /* main.m */; };
+		74A36AA818DAC895001013CD /* PMAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 74A36AA718DAC895001013CD /* PMAppDelegate.m */; };
+		74A36AAB18DAC895001013CD /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74A36AA918DAC895001013CD /* Main_iPhone.storyboard */; };
+		74A36AAE18DAC895001013CD /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74A36AAC18DAC895001013CD /* Main_iPad.storyboard */; };
+		74A36AB118DAC895001013CD /* PMViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 74A36AB018DAC895001013CD /* PMViewController.m */; };
+		74A36AB318DAC895001013CD /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 74A36AB218DAC895001013CD /* Images.xcassets */; };
+		74A36ABA18DAC895001013CD /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74A36AB918DAC895001013CD /* XCTest.framework */; };
+		74A36ABB18DAC895001013CD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74A36A9718DAC895001013CD /* Foundation.framework */; };
+		74A36ABC18DAC895001013CD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74A36A9B18DAC895001013CD /* UIKit.framework */; };
+		74A36AC418DAC895001013CD /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 74A36AC218DAC895001013CD /* InfoPlist.strings */; };
+		74A36AC618DAC895001013CD /* PMCircularCollectionView_iOSExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 74A36AC518DAC895001013CD /* PMCircularCollectionView_iOSExampleTests.m */; };
+		AABDCF6939A14C00A9E34FB9 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6841CB31DB5B4C3E8E9B4858 /* libPods.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		74A36ABD18DAC895001013CD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 74A36A8C18DAC895001013CD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 74A36A9318DAC895001013CD;
+			remoteInfo = "PMCircularCollectionView-iOSExample";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		6336FA2F3339488EB63B98F6 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = ../Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		6780A7971949676C006A7DAD /* stock_photo1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stock_photo1.jpg; sourceTree = "<group>"; };
+		6780A7981949676C006A7DAD /* stock_photo2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stock_photo2.jpg; sourceTree = "<group>"; };
+		6780A7991949676C006A7DAD /* stock_photo3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stock_photo3.jpg; sourceTree = "<group>"; };
+		6780A79A1949676C006A7DAD /* stock_photo4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stock_photo4.jpg; sourceTree = "<group>"; };
+		6780A79B1949676C006A7DAD /* stock_photo5.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stock_photo5.jpg; sourceTree = "<group>"; };
+		6841CB31DB5B4C3E8E9B4858 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		74A36A9418DAC895001013CD /* PMCircularCollectionView-iOSExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PMCircularCollectionView-iOSExample.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		74A36A9718DAC895001013CD /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		74A36A9918DAC895001013CD /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		74A36A9B18DAC895001013CD /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		74A36A9F18DAC895001013CD /* PMCircularCollectionView-iOSExample-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PMCircularCollectionView-iOSExample-Info.plist"; sourceTree = "<group>"; };
+		74A36AA118DAC895001013CD /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		74A36AA318DAC895001013CD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		74A36AA518DAC895001013CD /* PMCircularCollectionView-iOSExample-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PMCircularCollectionView-iOSExample-Prefix.pch"; sourceTree = "<group>"; };
+		74A36AA618DAC895001013CD /* PMAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PMAppDelegate.h; sourceTree = "<group>"; };
+		74A36AA718DAC895001013CD /* PMAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PMAppDelegate.m; sourceTree = "<group>"; };
+		74A36AAA18DAC895001013CD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
+		74A36AAD18DAC895001013CD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
+		74A36AAF18DAC895001013CD /* PMViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PMViewController.h; sourceTree = "<group>"; };
+		74A36AB018DAC895001013CD /* PMViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PMViewController.m; sourceTree = "<group>"; };
+		74A36AB218DAC895001013CD /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		74A36AB818DAC895001013CD /* PMCircularCollectionView-iOSExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PMCircularCollectionView-iOSExampleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		74A36AB918DAC895001013CD /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		74A36AC118DAC895001013CD /* PMCircularCollectionView-iOSExampleTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PMCircularCollectionView-iOSExampleTests-Info.plist"; sourceTree = "<group>"; };
+		74A36AC318DAC895001013CD /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		74A36AC518DAC895001013CD /* PMCircularCollectionView_iOSExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PMCircularCollectionView_iOSExampleTests.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		74A36A9118DAC895001013CD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				74A36A9A18DAC895001013CD /* CoreGraphics.framework in Frameworks */,
+				74A36A9C18DAC895001013CD /* UIKit.framework in Frameworks */,
+				74A36A9818DAC895001013CD /* Foundation.framework in Frameworks */,
+				AABDCF6939A14C00A9E34FB9 /* libPods.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		74A36AB518DAC895001013CD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				74A36ABA18DAC895001013CD /* XCTest.framework in Frameworks */,
+				74A36ABC18DAC895001013CD /* UIKit.framework in Frameworks */,
+				74A36ABB18DAC895001013CD /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		74A36A8B18DAC895001013CD = {
+			isa = PBXGroup;
+			children = (
+				74A36A9D18DAC895001013CD /* PMCircularCollectionView-iOSExample */,
+				74A36ABF18DAC895001013CD /* PMCircularCollectionView-iOSExampleTests */,
+				74A36A9618DAC895001013CD /* Frameworks */,
+				74A36A9518DAC895001013CD /* Products */,
+				6336FA2F3339488EB63B98F6 /* Pods.xcconfig */,
+			);
+			sourceTree = "<group>";
+		};
+		74A36A9518DAC895001013CD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				74A36A9418DAC895001013CD /* PMCircularCollectionView-iOSExample.app */,
+				74A36AB818DAC895001013CD /* PMCircularCollectionView-iOSExampleTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		74A36A9618DAC895001013CD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				74A36A9718DAC895001013CD /* Foundation.framework */,
+				74A36A9918DAC895001013CD /* CoreGraphics.framework */,
+				74A36A9B18DAC895001013CD /* UIKit.framework */,
+				74A36AB918DAC895001013CD /* XCTest.framework */,
+				6841CB31DB5B4C3E8E9B4858 /* libPods.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		74A36A9D18DAC895001013CD /* PMCircularCollectionView-iOSExample */ = {
+			isa = PBXGroup;
+			children = (
+				74A36AA618DAC895001013CD /* PMAppDelegate.h */,
+				74A36AA718DAC895001013CD /* PMAppDelegate.m */,
+				74A36AA918DAC895001013CD /* Main_iPhone.storyboard */,
+				74A36AAC18DAC895001013CD /* Main_iPad.storyboard */,
+				74A36AAF18DAC895001013CD /* PMViewController.h */,
+				74A36AB018DAC895001013CD /* PMViewController.m */,
+				74A36AB218DAC895001013CD /* Images.xcassets */,
+				74A36A9E18DAC895001013CD /* Supporting Files */,
+			);
+			path = "PMCircularCollectionView-iOSExample";
+			sourceTree = "<group>";
+		};
+		74A36A9E18DAC895001013CD /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				6780A7971949676C006A7DAD /* stock_photo1.jpg */,
+				6780A7981949676C006A7DAD /* stock_photo2.jpg */,
+				6780A7991949676C006A7DAD /* stock_photo3.jpg */,
+				6780A79A1949676C006A7DAD /* stock_photo4.jpg */,
+				6780A79B1949676C006A7DAD /* stock_photo5.jpg */,
+				74A36A9F18DAC895001013CD /* PMCircularCollectionView-iOSExample-Info.plist */,
+				74A36AA018DAC895001013CD /* InfoPlist.strings */,
+				74A36AA318DAC895001013CD /* main.m */,
+				74A36AA518DAC895001013CD /* PMCircularCollectionView-iOSExample-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		74A36ABF18DAC895001013CD /* PMCircularCollectionView-iOSExampleTests */ = {
+			isa = PBXGroup;
+			children = (
+				74A36AC518DAC895001013CD /* PMCircularCollectionView_iOSExampleTests.m */,
+				74A36AC018DAC895001013CD /* Supporting Files */,
+			);
+			path = "PMCircularCollectionView-iOSExampleTests";
+			sourceTree = "<group>";
+		};
+		74A36AC018DAC895001013CD /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				74A36AC118DAC895001013CD /* PMCircularCollectionView-iOSExampleTests-Info.plist */,
+				74A36AC218DAC895001013CD /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		74A36A9318DAC895001013CD /* PMCircularCollectionView-iOSExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 74A36AC918DAC895001013CD /* Build configuration list for PBXNativeTarget "PMCircularCollectionView-iOSExample" */;
+			buildPhases = (
+				B8EBEC665FE842B2940D5198 /* Check Pods Manifest.lock */,
+				74A36A9018DAC895001013CD /* Sources */,
+				74A36A9118DAC895001013CD /* Frameworks */,
+				74A36A9218DAC895001013CD /* Resources */,
+				55F198915A42457F8E6E888B /* Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "PMCircularCollectionView-iOSExample";
+			productName = "PMCircularCollectionView-iOSExample";
+			productReference = 74A36A9418DAC895001013CD /* PMCircularCollectionView-iOSExample.app */;
+			productType = "com.apple.product-type.application";
+		};
+		74A36AB718DAC895001013CD /* PMCircularCollectionView-iOSExampleTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 74A36ACC18DAC895001013CD /* Build configuration list for PBXNativeTarget "PMCircularCollectionView-iOSExampleTests" */;
+			buildPhases = (
+				74A36AB418DAC895001013CD /* Sources */,
+				74A36AB518DAC895001013CD /* Frameworks */,
+				74A36AB618DAC895001013CD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				74A36ABE18DAC895001013CD /* PBXTargetDependency */,
+			);
+			name = "PMCircularCollectionView-iOSExampleTests";
+			productName = "PMCircularCollectionView-iOSExampleTests";
+			productReference = 74A36AB818DAC895001013CD /* PMCircularCollectionView-iOSExampleTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		74A36A8C18DAC895001013CD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = PM;
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = "Peter Meyers";
+				TargetAttributes = {
+					74A36AB718DAC895001013CD = {
+						TestTargetID = 74A36A9318DAC895001013CD;
+					};
+				};
+			};
+			buildConfigurationList = 74A36A8F18DAC895001013CD /* Build configuration list for PBXProject "PMCircularCollectionView-iOSExample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 74A36A8B18DAC895001013CD;
+			productRefGroup = 74A36A9518DAC895001013CD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				74A36A9318DAC895001013CD /* PMCircularCollectionView-iOSExample */,
+				74A36AB718DAC895001013CD /* PMCircularCollectionView-iOSExampleTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		74A36A9218DAC895001013CD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6780A79F1949676C006A7DAD /* stock_photo4.jpg in Resources */,
+				6780A79C1949676C006A7DAD /* stock_photo1.jpg in Resources */,
+				74A36AAE18DAC895001013CD /* Main_iPad.storyboard in Resources */,
+				6780A79E1949676C006A7DAD /* stock_photo3.jpg in Resources */,
+				74A36AB318DAC895001013CD /* Images.xcassets in Resources */,
+				74A36AAB18DAC895001013CD /* Main_iPhone.storyboard in Resources */,
+				6780A79D1949676C006A7DAD /* stock_photo2.jpg in Resources */,
+				6780A7A01949676C006A7DAD /* stock_photo5.jpg in Resources */,
+				74A36AA218DAC895001013CD /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		74A36AB618DAC895001013CD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				74A36AC418DAC895001013CD /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		55F198915A42457F8E6E888B /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/../Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B8EBEC665FE842B2940D5198 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		74A36A9018DAC895001013CD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				74A36AA418DAC895001013CD /* main.m in Sources */,
+				74A36AB118DAC895001013CD /* PMViewController.m in Sources */,
+				74A36AA818DAC895001013CD /* PMAppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		74A36AB418DAC895001013CD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				74A36AC618DAC895001013CD /* PMCircularCollectionView_iOSExampleTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		74A36ABE18DAC895001013CD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 74A36A9318DAC895001013CD /* PMCircularCollectionView-iOSExample */;
+			targetProxy = 74A36ABD18DAC895001013CD /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		74A36AA018DAC895001013CD /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				74A36AA118DAC895001013CD /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		74A36AA918DAC895001013CD /* Main_iPhone.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				74A36AAA18DAC895001013CD /* Base */,
+			);
+			name = Main_iPhone.storyboard;
+			sourceTree = "<group>";
+		};
+		74A36AAC18DAC895001013CD /* Main_iPad.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				74A36AAD18DAC895001013CD /* Base */,
+			);
+			name = Main_iPad.storyboard;
+			sourceTree = "<group>";
+		};
+		74A36AC218DAC895001013CD /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				74A36AC318DAC895001013CD /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		74A36AC718DAC895001013CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		74A36AC818DAC895001013CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		74A36ACA18DAC895001013CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6336FA2F3339488EB63B98F6 /* Pods.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PMCircularCollectionView-iOSExample/PMCircularCollectionView-iOSExample-Prefix.pch";
+				INFOPLIST_FILE = "PMCircularCollectionView-iOSExample/PMCircularCollectionView-iOSExample-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		74A36ACB18DAC895001013CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6336FA2F3339488EB63B98F6 /* Pods.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PMCircularCollectionView-iOSExample/PMCircularCollectionView-iOSExample-Prefix.pch";
+				INFOPLIST_FILE = "PMCircularCollectionView-iOSExample/PMCircularCollectionView-iOSExample-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		74A36ACD18DAC895001013CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/PMCircularCollectionView-iOSExample.app/PMCircularCollectionView-iOSExample";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PMCircularCollectionView-iOSExample/PMCircularCollectionView-iOSExample-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "PMCircularCollectionView-iOSExampleTests/PMCircularCollectionView-iOSExampleTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		74A36ACE18DAC895001013CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/PMCircularCollectionView-iOSExample.app/PMCircularCollectionView-iOSExample";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PMCircularCollectionView-iOSExample/PMCircularCollectionView-iOSExample-Prefix.pch";
+				INFOPLIST_FILE = "PMCircularCollectionView-iOSExampleTests/PMCircularCollectionView-iOSExampleTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		74A36A8F18DAC895001013CD /* Build configuration list for PBXProject "PMCircularCollectionView-iOSExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				74A36AC718DAC895001013CD /* Debug */,
+				74A36AC818DAC895001013CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		74A36AC918DAC895001013CD /* Build configuration list for PBXNativeTarget "PMCircularCollectionView-iOSExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				74A36ACA18DAC895001013CD /* Debug */,
+				74A36ACB18DAC895001013CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		74A36ACC18DAC895001013CD /* Build configuration list for PBXNativeTarget "PMCircularCollectionView-iOSExampleTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				74A36ACD18DAC895001013CD /* Debug */,
+				74A36ACE18DAC895001013CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 74A36A8C18DAC895001013CD /* Project object */;
+}
