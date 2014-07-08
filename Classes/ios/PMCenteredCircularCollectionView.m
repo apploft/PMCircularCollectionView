@@ -107,7 +107,7 @@
 				
 				NSIndexPath *toIndexPath = [NSIndexPath indexPathForItem:toItem inSection:0];
 				
-				[self _centerIndexPath:toIndexPath animated:animated notifyDelegate:YES];
+				[self PM_centerIndexPath:toIndexPath animated:animated notifyDelegate:YES];
 			}
 		}
 	}
@@ -120,7 +120,7 @@
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     NSIndexPath *indexPathNearestToBoundsCenter = [self indexPathNearestToBoundsCenter];
-    [self _centerIndexPath:indexPathNearestToBoundsCenter animated:YES notifyDelegate:YES];
+    [self PM_centerIndexPath:indexPathNearestToBoundsCenter animated:YES notifyDelegate:YES];
 
     if (_delegateRespondsToScrollViewDidEndDecelerating) {
         [_originalDelegate scrollViewDidEndDecelerating:scrollView];
@@ -133,7 +133,7 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self _centerIndexPath:indexPath animated:YES notifyDelegate:YES];
+    [self PM_centerIndexPath:indexPath animated:YES notifyDelegate:YES];
     
     if (_delegateRespondsToDidSelectItemAtIndexPath) {
         [_originalDelegate collectionView:collectionView didSelectItemAtIndexPath:indexPath];
@@ -144,7 +144,7 @@
 #pragma mark - Private Methods
 
 
-- (void) _centerIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated notifyDelegate:(BOOL)notifyDelegate
+- (void) PM_centerIndexPath:(NSIndexPath *)indexPath animated:(BOOL)animated notifyDelegate:(BOOL)notifyDelegate
 {
 	NSParameterAssert(indexPath);
 	
@@ -162,7 +162,7 @@
     }
 }
 
-- (CGPoint) _contentOffsetForCenteredOffset:(CGPoint)centeredOffset
+- (CGPoint) PM_contentOffsetForCenteredOffset:(CGPoint)centeredOffset
 {
 	centeredOffset.x = floorf(centeredOffset.x - self.bounds.size.width/2.0f);
 	centeredOffset.y = floorf(centeredOffset.y - self.bounds.size.height/2.0f);

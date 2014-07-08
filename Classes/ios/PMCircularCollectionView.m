@@ -69,7 +69,7 @@ static NSUInteger const ContentMultiplier = 4;
 {
     self = [super initWithFrame:frame collectionViewLayout:layout];
     if (self) {
-        [self _commonCircularCollectionViewInit];
+        [self PM_commonCircularCollectionViewInit];
     }
     return self;
 }
@@ -78,20 +78,20 @@ static NSUInteger const ContentMultiplier = 4;
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        [self _commonCircularCollectionViewInit];
+        [self PM_commonCircularCollectionViewInit];
     }
     return self;
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    [self _recenterIfNecessary];
+    [self PM_recenterIfNecessary];
 }
 
 - (void) setFrame:(CGRect)frame
 {
 	[super setFrame:frame];
-	[self _resetShadowLayer];
+	[self PM_resetShadowLayer];
 }
 
 
@@ -121,7 +121,7 @@ static NSUInteger const ContentMultiplier = 4;
 {
     if (_shadowRadius != shadowRadius) {
         _shadowRadius = shadowRadius;
-        [self _resetShadowLayer];
+        [self PM_resetShadowLayer];
     }
 }
 
@@ -129,7 +129,7 @@ static NSUInteger const ContentMultiplier = 4;
 {
     if (![_shadowColor isEqual:shadowColor]) {
         _shadowColor = shadowColor;
-        [self _resetShadowLayer];
+        [self PM_resetShadowLayer];
     }
 }
 
@@ -137,7 +137,7 @@ static NSUInteger const ContentMultiplier = 4;
 {
 	if (_explicitlyDisabled != circularDisabled) {
 		_explicitlyDisabled = circularDisabled;
-		[self _resetShadowLayer];
+		[self PM_resetShadowLayer];
 		[self reloadData];
 	}
 }
@@ -146,7 +146,7 @@ static NSUInteger const ContentMultiplier = 4;
 {
 	if (_circularImplicitlyDisabled != circularImplicitlyDisabled) {
 		_circularImplicitlyDisabled = circularImplicitlyDisabled;
-		[self _resetShadowLayer];
+		[self PM_resetShadowLayer];
 	}
 }
 
@@ -177,7 +177,7 @@ static NSUInteger const ContentMultiplier = 4;
     NSParameterAssert([collectionView isKindOfClass:[PMCircularCollectionView class]]);
     
     _itemCount = [_dataSourceInterceptor.receiver collectionView:collectionView numberOfItemsInSection:section];
-    self.circularImplicitlyDisabled = [self _disableCircularInternallyBasedOnContentSize];
+    self.circularImplicitlyDisabled = [self PM_disableCircularInternallyBasedOnContentSize];
     return [self circularActive]? _itemCount * ContentMultiplier : _itemCount;
 }
 
@@ -203,7 +203,7 @@ static NSUInteger const ContentMultiplier = 4;
 #pragma mark - Private Methods
 
 
-- (void) _commonCircularCollectionViewInit;
+- (void) PM_commonCircularCollectionViewInit;
 {
     NSSet *delegateProtocols = [NSSet setWithObjects:
                                 @protocol(UICollectionViewDelegate),
@@ -220,7 +220,7 @@ static NSUInteger const ContentMultiplier = 4;
     self.showsVerticalScrollIndicator = NO;
 }
 
-- (void) _recenterIfNecessary
+- (void) PM_recenterIfNecessary
 {
     if ([self circularActive]) {
         
@@ -261,7 +261,7 @@ static NSUInteger const ContentMultiplier = 4;
     }
 }
 
-- (void) _resetShadowLayer
+- (void) PM_resetShadowLayer
 {
     if (self.shadowRadius && self.shadowColor.alpha && [self circularActive]) {
         
@@ -305,10 +305,10 @@ static NSUInteger const ContentMultiplier = 4;
 	}
 }
 
-- (BOOL) _disableCircularInternallyBasedOnContentSize
+- (BOOL) PM_disableCircularInternallyBasedOnContentSize
 {
-    CGSize requiredContentSize = [self _calculateRequiredContentSize];
-    CGSize spacingSize = [self _calculateSpacingSize];
+    CGSize requiredContentSize = [self PM_calculateRequiredContentSize];
+    CGSize spacingSize = [self PM_calculateSpacingSize];
     
     switch (self.collectionViewLayout.scrollDirection)
     {
@@ -317,7 +317,7 @@ static NSUInteger const ContentMultiplier = 4;
     }
 }
 
-- (CGSize) _calculateRequiredContentSize
+- (CGSize) PM_calculateRequiredContentSize
 {
     CGSize contentSize = CGSizeZero;
     CGSize largestItem = CGSizeZero;
@@ -345,7 +345,7 @@ static NSUInteger const ContentMultiplier = 4;
     return CGSizeMake(contentSize.width - largestItem.width, contentSize.height - largestItem.height);
 }
 
-- (CGSize) _calculateSpacingSize
+- (CGSize) PM_calculateSpacingSize
 {
     CGFloat lineSpacing = _delegateRespondsToMinimumLineSpacingForSectionAtIndex? [self.delegate collectionView:self layout:self.collectionViewLayout minimumLineSpacingForSectionAtIndex:0] : (_itemCount * self.collectionViewLayout.minimumLineSpacing);
     CGFloat interitemSpacing = _delegateRespondsToMinimumInteritemSpacingForSectionAtIndex? [self.delegate collectionView:self layout:self.collectionViewLayout minimumInteritemSpacingForSectionAtIndex:0] : (_itemCount * self.collectionViewLayout.minimumInteritemSpacing);
