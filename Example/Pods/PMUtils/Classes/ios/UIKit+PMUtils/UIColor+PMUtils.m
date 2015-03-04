@@ -25,24 +25,26 @@
 
 #import "UIColor+PMUtils.h"
 
-@implementation UIColor (PMUtils)
+inline UIColor * PMColorWithRGBA(NSUInteger red, NSUInteger green, NSUInteger blue, CGFloat alpha) {
+    return [UIColor colorWithRed:(red/255.0f) green:(green/255.0f) blue:(blue/255.0f) alpha:alpha];
+}
 
-+ (UIColor*)colorWithHexString:(NSString *)hexString alpha:(CGFloat)alpha
-{
+inline UIColor * PMColorWithHex(NSString *hexString, CGFloat alpha) {
+	
 	NSScanner *scanner = [NSScanner scannerWithString:hexString];
 	unsigned int colors;
 	
-	if ([scanner scanHexInt:&colors])
-	{
-		unsigned int red = (colors >> 16) & 0x00FF;
-		unsigned int green = (colors >> 8) & 0x00FF;
-		unsigned int blue = colors & 0x00FF;
-		
-		return [UIColor colorWithRed:RGB(red) green:RGB(green) blue:RGB(blue) alpha:alpha];
+	if ([scanner scanHexInt:&colors]) {
+        
+		unsigned int red = (colors >> 16) & 0xFF;
+		unsigned int green = (colors >> 8) & 0xFF;
+		unsigned int blue = colors & 0xFF;
+		return PMColorWithRGBA(red, green, blue, alpha);
 	}
-	
 	return [UIColor colorWithWhite:0.0f alpha:alpha];
 }
+
+@implementation UIColor (PMUtils)
 
 - (CGFloat) alpha
 {

@@ -25,22 +25,23 @@
 
 #import "PMUtils.h"
 
-NSTimeInterval const PMOneHour = (60*60);
-NSTimeInterval const PMOneDay = (PMOneHour*24);
-NSTimeInterval const PMOneWeek = (PMOneDay*7);
-NSUInteger const PMBytesPerMegabyte = 1024 * 1024;
+NSTimeInterval const PMOneSecond = 1;
+NSTimeInterval const PMOneMilisecond = (PMOneSecond / 1000);
+NSTimeInterval const PMOneMinute = (PMOneSecond * 60);
+NSTimeInterval const PMOneHour = (PMOneMinute * 60);
+NSTimeInterval const PMOneDay = (PMOneHour * 24);
+NSTimeInterval const PMOneWeek = (PMOneDay * 7);
+
+NSUInteger const PMBytesPerKilobyte = 1024;
+NSUInteger const PMBytesPerMegabyte = 1024 * PMBytesPerKilobyte;
+NSUInteger const PMBytesPerGigabyte = 1024 * PMBytesPerMegabyte;
 
 
 NSInteger PMShortestCircularDistance(NSInteger fromIndex, NSInteger toIndex, NSRange inRange)
 {
     NSInteger forwardDistance = PMForwardCircularDistance(fromIndex, toIndex, inRange);
     NSInteger reverseDistance = PMReverseCircularDistance(fromIndex, toIndex, inRange);
-    
-    if (ABS(reverseDistance) < forwardDistance) {
-        return reverseDistance;
-    }
-    
-    return forwardDistance;
+    return (ABS(reverseDistance) < forwardDistance)? reverseDistance : forwardDistance;
 }
 
 NSInteger PMReverseCircularDistance(NSInteger fromIndex, NSInteger toIndex, NSRange inRange)
@@ -67,3 +68,23 @@ NSInteger PMForwardCircularDistance(NSInteger fromIndex, NSInteger toIndex, NSRa
         return inRange.length - fromIndex + toIndex;
     }
 }
+
+CGMutablePathRef PMRoundedRectPath(CGRect rect, CGFloat cornerRadius)
+{
+    CGFloat minX = CGRectGetMinX(rect);
+    CGFloat midX = CGRectGetMidX(rect);
+    CGFloat maxX = CGRectGetMaxX(rect);
+    CGFloat minY = CGRectGetMinY(rect);
+    CGFloat midY = CGRectGetMidY(rect);
+    CGFloat maxY = CGRectGetMaxY(rect);
+ 
+    CGMutablePathRef path = CGPathCreateMutable();
+    
+    CGPathMoveToPoint(path, NULL, rect.origin.x, rect.origin.y);
+    CGPathAddArcToPoint(path, NULL, minX, maxY, midX, maxY, cornerRadius);
+    CGPathAddArcToPoint(path, NULL, maxX, maxY, maxX, midY, cornerRadius);
+    CGPathAddArcToPoint(path, NULL, maxX, minY, midX, minY, cornerRadius);
+    CGPathAddArcToPoint(path, NULL, minX, minY, minX, midY, cornerRadius);
+    return path;
+}
+

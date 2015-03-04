@@ -28,23 +28,19 @@
 
 #import "PMOrderedDictionary.h"
 
-NSString *DescriptionForObject(NSObject *object, id locale, NSUInteger indent)
+static inline NSString * PMDescriptionForObject(NSObject *object, id locale, NSUInteger indent)
 {
 	NSString *objectString;
-	if ([object isKindOfClass:[NSString class]])
-	{
+	if ([object isKindOfClass:[NSString class]]) {
 		objectString = (NSString *)object;
 	}
-	else if ([object respondsToSelector:@selector(descriptionWithLocale:indent:)])
-	{
+	else if ([object respondsToSelector:@selector(descriptionWithLocale:indent:)]) {
 		objectString = [(NSDictionary *)object descriptionWithLocale:locale indent:indent];
 	}
-	else if ([object respondsToSelector:@selector(descriptionWithLocale:)])
-	{
+	else if ([object respondsToSelector:@selector(descriptionWithLocale:)])	{
 		objectString = [(NSSet *)object descriptionWithLocale:locale];
 	}
-	else
-	{
+	else {
 		objectString = [object description];
 	}
 	return objectString;
@@ -67,23 +63,16 @@ NSString *DescriptionForObject(NSObject *object, id locale, NSUInteger indent)
 - (id)initWithCapacity:(NSUInteger)capacity
 {
 	self = [super init];
-	if (self)
-	{
+	if (self) {
 		_dictionary = [[NSMutableDictionary alloc] initWithCapacity:capacity];
 		_array = [[NSMutableArray alloc] initWithCapacity:capacity];
 	}
 	return self;
 }
 
-- (id)copy
-{
-	return [self mutableCopy];
-}
-
 - (void)setObject:(id)anObject forKey:(id)aKey
 {
-	if (![self.dictionary objectForKey:aKey])
-	{
+	if (![self.dictionary objectForKey:aKey]) {
 		[self.array addObject:aKey];
 	}
 	[self.dictionary setObject:anObject forKey:aKey];
@@ -115,13 +104,13 @@ NSString *DescriptionForObject(NSObject *object, id locale, NSUInteger indent)
 	return self.array.reverseObjectEnumerator;
 }
 
-- (void)insertObject:(id)anObject forKey:(id)aKey atIndex:(NSUInteger)anIndex
+- (void)insertObject:(id)anObject forKey:(id<NSCopying>)aKey atIndex:(NSUInteger)anIndex
 {
-	if ([self.dictionary objectForKey:aKey])
-	{
+	if ([self.dictionary objectForKey:aKey]) {
 		[self removeObjectForKey:aKey];
 	}
-	[self.array insertObject:aKey atIndex:anIndex];
+    
+	[self.array insertObject:[aKey copyWithZone:NULL] atIndex:anIndex];
 	[self.dictionary setObject:anObject forKey:aKey];
 }
 
@@ -143,32 +132,44 @@ NSString *DescriptionForObject(NSObject *object, id locale, NSUInteger indent)
 
 - (NSUInteger)indexOfObject:(id)object
 {
-    for (NSUInteger i = 0; i < self.array.count; i++) {
-        id<NSCopying> key = self.array[i];
+    __block NSUInteger objidx = NSNotFound;
+    [self.array enumerateObjectsUsingBlock:^(id<NSCopying> key, NSUInteger idx, BOOL *stop) {
         if ([object isEqual:self.dictionary[key]]) {
-            return i;
+            objidx = idx;
+            *stop = YES;
         }
-    }
-    return NSNotFound;
+    }];
+    return objidx;
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    return [self mutableCopyWithZone:zone];
+}
+
+- (id)mutableCopyWithZone:(NSZone *)zone
+{
+    PMOrderedDictionary *dict = [[[self class] allocWithZone:zone] init];
+    dict.array = [self.array mutableCopy];
+    dict.dictionary = [self.dictionary mutableCopy];
+    return dict;
 }
 
 - (NSString *)descriptionWithLocale:(id)locale indent:(NSUInteger)level
 {
 	NSMutableString *indentString = [NSMutableString string];
 	NSUInteger i, count = level;
-	for (i = 0; i < count; i++)
-	{
+	for (i = 0; i < count; i++) {
 		[indentString appendFormat:@"    "];
 	}
 	
 	NSMutableString *description = [NSMutableString string];
 	[description appendFormat:@"%@{\n", indentString];
-	for (NSObject *key in self)
-	{
+	for (NSObject *key in self)	{
 		[description appendFormat:@"%@    %@ = %@;\n",
 			indentString,
-			DescriptionForObject(key, locale, level),
-			DescriptionForObject([self objectForKey:key], locale, level)];
+			PMDescriptionForObject(key, locale, level),
+			PMDescriptionForObject([self objectForKey:key], locale, level)];
 	}
 	[description appendFormat:@"%@}\n", indentString];
 	return description;

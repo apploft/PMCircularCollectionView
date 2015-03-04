@@ -25,27 +25,27 @@
 
 #import "NSString+PMUtils.h"
 #import "NSData+PMUtils.h"
-#import <CommonCrypto/CommonCrypto.h>
+#import "NSRegularExpression+PMUtils.h"
 
 @implementation NSString (PMUtils)
 
-- (NSString *) encodedQuery
+- (NSString *) encodedURLQuery
 {
 	return [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 }
 
 - (NSString *)sha1Hash
 {
-	unsigned char	sha1Bytes[CC_SHA1_DIGEST_LENGTH];
-	
-	if (CC_SHA1([self UTF8String], (CC_LONG)[self lengthOfBytesUsingEncoding:NSUTF8StringEncoding], sha1Bytes))
-	{
-		NSData		*data		= [NSData dataWithBytes:sha1Bytes length:CC_SHA1_DIGEST_LENGTH];
-		
-		return [data hexString];
-	}
-	
-	return nil;
+    NSData *data = [self dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *hash = [data sha1Hash];
+    return [hash hexString];
+}
+
+- (NSString *)md5Hash
+{
+    NSData *data = [self dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *hash = [data md5Hash];
+    return [hash hexString];
 }
 
 - (BOOL) isCapitalized
@@ -56,12 +56,71 @@
 - (NSComparisonResult) compareWithVersion:(NSString *)otherVersion
 {
 	// We want 1.0 and 1.0.0 to return NSOrderedSame.
-	NSString *v1 = [self removeTrailingZerosAndPeriods];
-	NSString *v2 = [otherVersion removeTrailingZerosAndPeriods];
+	NSParameterAssert([self PM_isVersionString]);
+	NSParameterAssert([otherVersion PM_isVersionString]);
+	NSString *v1 = [self PM_removeTrailingZerosAndPeriods];
+	NSString *v2 = [otherVersion PM_removeTrailingZerosAndPeriods];
     return [v1 compare:v2 options:NSNumericSearch];
 }
 
-- (NSString *) removeTrailingZerosAndPeriods
+- (BOOL) inVersion:(NSString *)baseVersion
+{
+	NSParameterAssert([self PM_isVersionString]);
+	NSParameterAssert([baseVersion PM_isVersionString]);
+    NSString *receiver = [self PM_removeTrailingZerosAndPeriods];
+    NSString *base = [baseVersion PM_removeTrailingZerosAndPeriods];
+    NSRange range = [receiver rangeOfString:base];
+    return range.location == 0;
+}
+
+- (BOOL)containsEmoji
+{
+    static dispatch_once_t once;
+	static NSRegularExpression *regex;
+	dispatch_once(&once, ^{
+        NSError *error = nil;
+        regex = [NSRegularExpression regularExpressionWithPattern:@"[^\\u0020-\\u007E\\u00A0-\\u00BE\\u2E80-\\uA4CF\\uF900-\\uFAFF\\uFE30-\\uFE4F\\uFF00-\\uFFEF\\u0080-\\u009F\\u2000-\\u201f\r\n]" options:NSRegularExpressionCaseInsensitive error:&error];
+        NSParameterAssert(!error);
+    });
+    NSUInteger numberOfMatches = [regex numberOfMatchesInString:self options:0 range:NSMakeRange(0, self.length)];
+    return numberOfMatches != 0;
+}
+
+- (NSString *) camelCaseFromUnderscores
+{
+    NSArray *components = [self componentsSeparatedByString:@"_"];
+    NSMutableString *output = [NSMutableString stringWithString:components[0]];
+    
+    for (NSUInteger i = 1; i < components.count; i++) {
+		NSString *component = components[i];
+        [output appendString:[component stringByReplacingCharactersInRange:NSMakeRange(0,1)
+																withString:[[component substringToIndex:1] uppercaseString]]];
+    }
+    return [output copy];
+}
+
+- (NSString *) underscoresFromCamelCase
+{
+    NSMutableString *output = [[self substringToIndex:1] mutableCopy];
+    NSCharacterSet *uppercaseCharacters = [NSCharacterSet uppercaseLetterCharacterSet];
+    NSCharacterSet *whitespaceCharacters = [NSCharacterSet whitespaceCharacterSet];
+	
+    for (NSInteger i = 1; i < self.length; i++ ) {
+        unichar c = [self characterAtIndex:i];
+        if ([uppercaseCharacters characterIsMember:c] &&
+			![whitespaceCharacters characterIsMember:[self characterAtIndex:i-1]]) {
+            [output appendFormat:@"_%@", [[NSString stringWithCharacters:&c length:1] lowercaseString]];
+        }
+		else {
+            [output appendFormat:@"%C", c];
+        }
+    }
+    return [output copy];
+}
+
+#pragma mark - Internal Methods
+
+- (NSString *) PM_removeTrailingZerosAndPeriods
 {
 	NSRange rangeToDelete = NSMakeRange(self.length, 0);
 	char lastChar = [self characterAtIndex:rangeToDelete.location-1];
@@ -74,94 +133,17 @@
 	return [self stringByReplacingCharactersInRange:rangeToDelete withString:@""];
 }
 
-- (BOOL) inVersion:(NSString *)baseVersion
+- (BOOL) PM_isVersionString
 {
-	NSArray *selfComponents = [self componentsSeparatedByString:@"."];
-	NSArray *baseComponents = [baseVersion componentsSeparatedByString:@"."];
-	
-	if (selfComponents.count < baseComponents.count) {
-		return NO; // x.y is not included in x.y.z
-	}
-	
-	for (NSInteger i = 0; i < selfComponents.count; i++)
-	{
-		if (baseComponents.count == i) {
-			return YES; // x.y.z is included in x.y
-		}
-		else if ( ![selfComponents[i] isEqualToString:baseComponents[i]] ) {
-			return NO; // x.y.a is not included in x.y.b
+	NSArray *components = [self componentsSeparatedByString:@"."];
+	BOOL isVersionString = YES;
+	for (NSString *integerString in components) {
+		if ([[integerString stringByTrimmingCharactersInSet:[NSCharacterSet decimalDigitCharacterSet]] isEqualToString:@""] == NO) {
+			isVersionString = NO;
+			break;
 		}
 	}
-	
-	return YES; // x.y.z is included in x.y.z
-}
-
-- (BOOL) containsEmoji
-{
-	__block BOOL returnValue = NO;
-	[self enumerateSubstringsInRange:NSMakeRange(0, [self length]) options:NSStringEnumerationByComposedCharacterSequences usingBlock:
-	 ^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-		 
-		 const unichar hs = [substring characterAtIndex:0];
-		 // surrogate pair
-		 if (0xd800 <= hs && hs <= 0xdbff) {
-			 if (substring.length > 1) {
-				 const unichar ls = [substring characterAtIndex:1];
-				 const int uc = ((hs - 0xd800) * 0x400) + (ls - 0xdc00) + 0x10000;
-				 if (0x1d000 <= uc && uc <= 0x1f77f) {
-					 returnValue = YES;
-				 }
-			 }
-		 } else if (substring.length > 1) {
-			 const unichar ls = [substring characterAtIndex:1];
-			 if (ls == 0x20e3) {
-				 returnValue = YES;
-			 }
-			 
-		 } else {
-			 // non surrogate
-			 if (0x2100 <= hs && hs <= 0x27ff) {
-				 returnValue = YES;
-			 } else if (0x2B05 <= hs && hs <= 0x2b07) {
-				 returnValue = YES;
-			 } else if (0x2934 <= hs && hs <= 0x2935) {
-				 returnValue = YES;
-			 } else if (0x3297 <= hs && hs <= 0x3299) {
-				 returnValue = YES;
-			 } else if (hs == 0xa9 || hs == 0xae || hs == 0x303d || hs == 0x3030 || hs == 0x2b55 || hs == 0x2b1c || hs == 0x2b1b || hs == 0x2b50) {
-				 returnValue = YES;
-			 }
-		 }
-	 }];
-	
-	return returnValue;
-}
-
-- (NSString *) camelCaseFromUnderscores
-{
-    NSArray *components = [self componentsSeparatedByString:@"_"];
-    NSMutableString *output = [NSMutableString stringWithString:components[0]];
-    
-    for (NSUInteger i = 1; i < components.count; i++) {
-        [output appendString:[components[i] capitalizedString]];
-    }
-    
-    return output;
-}
-
-- (NSString *) underscoresFromCamelCase
-{
-    NSMutableString *output = [NSMutableString string];
-    NSCharacterSet *uppercaseCharacters = [NSCharacterSet uppercaseLetterCharacterSet];
-    for (NSInteger i = 0; i < self.length; i++ ) {
-        unichar c = [self characterAtIndex:i];
-        if ([uppercaseCharacters characterIsMember:c]) {
-            [output appendFormat:@"_%@", [[NSString stringWithCharacters:&c length:1] lowercaseString]];
-        } else {
-            [output appendFormat:@"%C", c];
-        }
-    }
-    return output;
+	return isVersionString;
 }
 
 @end

@@ -27,10 +27,9 @@
 
 @implementation NSThread (PMUtils)
 
-+ (void) dispatchMainThreadAsync:(void (^)(void))block
++ (void) dispatchMainThread:(void (^)(void))block
 {
 	if (block) {
-		
 		if ([NSThread isMainThread]) {
 			block();
 		}
@@ -40,17 +39,35 @@
 	}
 }
 
-+ (void) dispatchBackgroundThreadAsync:(void (^)(void))block
++ (void) dispatchBackgroundThread:(void (^)(void))block
+{
+    [self dispatchBackgroundThread:block priority:DISPATCH_QUEUE_PRIORITY_DEFAULT];
+}
+
++ (void) dispatchBackgroundThread:(void (^)(void))block priority:(dispatch_queue_priority_t)priority
 {
 	if (block) {
-		
 		if (![NSThread isMainThread]) {
 			block();
 		}
 		else {
-			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), block);
+			dispatch_async(dispatch_get_global_queue(priority, 0), block);
 		}
 	}
+}
+
++ (id) objectForCurrentThreadWithName:(NSString *)name creationBlock:(id (^)(void))creationBlock
+{
+    NSMutableDictionary *dict = [[self currentThread] threadDictionary];
+    id obj = dict[name];
+	
+	if (!obj && creationBlock) {
+		obj = creationBlock();
+		if (obj) {
+			dict[name] = obj;
+        }
+	}
+	return obj;
 }
 
 

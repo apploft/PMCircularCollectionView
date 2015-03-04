@@ -29,83 +29,89 @@
 
 @implementation NSFileManager (PMUtils)
 
-- (NSDate *)fileModificationDateForPath:(NSString *)path
+
+- (NSDate *)modificationDateForFileAtURL:(NSURL *)URL;
 {
-	NSDictionary	*attrs			= [self attributesOfItemAtPath:path error:NULL];
-	NSDate			*modDate		= [attrs fileModificationDate];
-	
+    NSError *error = nil;
+	NSDictionary *attrs = [self attributesOfItemAtPath:URL.path error:&error];
+    NSParameterAssert(!error);
+	NSDate *modDate = [attrs fileModificationDate];
 	return modDate;
 }
 
-- (NSString *)xattrStringValueForKey:(NSString *)key atPath:(NSString *)path
+- (void) removeContentsOfDirectory:(NSURL *)URL
 {
-	size_t					size			= 0;
-	char					*str			= NULL;
-	NSString				*string			= nil;
-    
-	size = getxattr([path UTF8String], [key UTF8String], NULL, 0, 0, 0);
-	if (size != -1)
-	{
-		str = malloc(size + 1);
-		if (str)
-		{
-			getxattr([path UTF8String], [key UTF8String], str, size, 0, 0);
-			str[size] = '\0';
-			
-			string = [NSString stringWithUTF8String:str];
-			
-			free(str);
-		}
-	}
-	
-	return string;
+	[self PM_removeContentsOfDirectory:URL removingSubdirectories:YES deep:NO];
 }
 
-- (void)setXAttrStringValue:(NSString *)value forKey:(NSString *)key atPath:(NSString *)path
+- (void) removeFilesInDirectory:(NSURL *)URL deep:(BOOL)deep
 {
-	setxattr([path UTF8String], [key UTF8String], [value UTF8String], [value length], 0, 0);
+	[self PM_removeContentsOfDirectory:URL removingSubdirectories:NO deep:deep];
 }
 
-
-- (void)shallowRemoveAllFilesInDirectory:(NSString *)path
+- (NSURL *) URLForDirectoryWithName:(NSString *)name attributes:(NSDictionary *)attributes inDirectory:(NSSearchPathDirectory)directory
 {
-	NSDirectoryEnumerator	*enumerator		= [self enumeratorAtPath:path];
-	
-	for (NSString *file in enumerator)
-	{
-		NSString *fullPath		= [path stringByAppendingPathComponent:file];
-		struct stat st;
-		
-		if (stat([fullPath UTF8String], &st) == 0)
-		{
-			if (!(st.st_mode & S_IFDIR))
-				unlink([fullPath UTF8String]);
-		}
-	}
-}
-
-+ (NSString *) pathForCreatedCachesDirectoryWithName:(NSString *)name
-{
-    NSFileManager *fileManager = [self defaultManager];
-	NSString *basePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).lastObject;
-	NSString *path = [basePath stringByAppendingPathComponent:name];
-    NSError *error = nil;
-    [fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error];
-    NSParameterAssert(!error);
-	return path;
-}
-
-+ (NSURL *) URLForCreatedCachesDirectoryWithName:(NSString *)name
-{
-    NSFileManager *fileManager = [self defaultManager];
-    NSURL *baseURL = [fileManager URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask].lastObject;
+    NSURL *baseURL = [self URLsForDirectory:directory inDomains:NSUserDomainMask].lastObject;
     NSURL *fullURL = [baseURL URLByAppendingPathComponent:name];
     NSError *error = nil;
-    [fileManager createDirectoryAtURL:fullURL withIntermediateDirectories:YES attributes:nil error:&error];
+    [self createDirectoryAtURL:fullURL withIntermediateDirectories:YES attributes:attributes error:&error];
     NSParameterAssert(!error);
     return fullURL;
 }
 
++ (NSString *)xattrStringValueForKey:(NSString *)key atURL:(NSURL *)URL
+{
+	NSString *value = nil;
+	const char *keyName = key.UTF8String;
+	const char *filePath = URL.fileSystemRepresentation;
+	
+	ssize_t bufferSize = getxattr(filePath, keyName, NULL, 0, 0, 0);
 
+	if (bufferSize != -1) {
+		char *buffer = malloc(bufferSize+1);
+	
+		if (buffer) {
+			getxattr(filePath, keyName, buffer, bufferSize, 0, 0);
+			buffer[bufferSize] = '\0';
+			value = [NSString stringWithUTF8String:buffer];
+			free(buffer);
+		}
+	}
+	return value;
+}
+
++ (BOOL)setXAttrStringValue:(NSString *)value forKey:(NSString *)key atURL:(NSURL *)URL
+{
+	int failed = setxattr(URL.fileSystemRepresentation, key.UTF8String, value.UTF8String, value.length, 0, 0);
+	return (failed == 0);
+}
+
+- (BOOL) URLIsDirectory:(NSURL *)URL
+{
+	NSParameterAssert(URL);
+    NSError *error = nil;
+	NSDictionary *attrs = [self attributesOfItemAtPath:URL.path error:&error];
+    NSParameterAssert(!error);
+    return [[attrs fileType] isEqualToString:NSFileTypeDirectory];
+}
+
+#pragma mark - Internal Methods
+
+- (void) PM_removeContentsOfDirectory:(NSURL *)URL
+			   removingSubdirectories:(BOOL)subdirectories
+								 deep:(BOOL)deep
+{
+    NSDirectoryEnumerator *enumerator = [self enumeratorAtURL:URL
+                                   includingPropertiesForKeys:@[NSURLIsDirectoryKey]
+                                                      options:deep? 0 : NSDirectoryEnumerationSkipsSubdirectoryDescendants
+                                                 errorHandler:nil];
+    for (NSURL *item in enumerator) {
+        if (subdirectories || ![self URLIsDirectory:item]) {
+            NSError *error = nil;
+            [self removeItemAtURL:item error:&error];
+            NSParameterAssert(!error);
+        }
+    }
+}
 
 @end

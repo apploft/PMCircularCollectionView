@@ -1,22 +1,26 @@
 PODS:
   - PMCircularCollectionView (0.9.1):
-    - PMUtils
-  - PMUtils (0.9.0):
+    - PMUtils (= 1.0.1)
+  - PMUtils (1.0.1):
+    - PMUtils/Foundation+PMUtils (= 1.0.1)
+    - PMUtils/PMAnimationOperation (= 1.0.1)
+    - PMUtils/PMCollectionViewSwipeCell (= 1.0.1)
+    - PMUtils/PMImageFilmstrip (= 1.0.1)
+    - PMUtils/PMInnerShadowView (= 1.0.1)
+    - PMUtils/PMOrderedDictionary (= 1.0.1)
+    - PMUtils/PMProtocolInterceptor (= 1.0.1)
+    - PMUtils/UIKit+PMUtils (= 1.0.1)
+  - PMUtils/Foundation+PMUtils (1.0.1)
+  - PMUtils/PMAnimationOperation (1.0.1)
+  - PMUtils/PMCollectionViewSwipeCell (1.0.1):
+    - PMUtils/UIKit+PMUtils
+  - PMUtils/PMImageFilmstrip (1.0.1):
+    - PMUtils/UIKit+PMUtils
+  - PMUtils/PMInnerShadowView (1.0.1)
+  - PMUtils/PMOrderedDictionary (1.0.1)
+  - PMUtils/PMProtocolInterceptor (1.0.1)
+  - PMUtils/UIKit+PMUtils (1.0.1):
     - PMUtils/Foundation+PMUtils
-    - PMUtils/PMAnimationQueue
-    - PMUtils/PMImageFilmstrip
-    - PMUtils/PMOrderedDictionary
-    - PMUtils/PMPair
-    - PMUtils/PMProtocolInterceptor
-    - PMUtils/UIKit+PMUtils
-  - PMUtils/Foundation+PMUtils (0.9.0)
-  - PMUtils/PMAnimationQueue (0.9.0)
-  - PMUtils/PMImageFilmstrip (0.9.0):
-    - PMUtils/UIKit+PMUtils
-  - PMUtils/PMOrderedDictionary (0.9.0)
-  - PMUtils/PMPair (0.9.0)
-  - PMUtils/PMProtocolInterceptor (0.9.0)
-  - PMUtils/UIKit+PMUtils (0.9.0)
 
 DEPENDENCIES:
   - PMCircularCollectionView (from `../PMCircularCollectionView.podspec`)
@@ -26,7 +30,7 @@ EXTERNAL SOURCES:
     :path: ../PMCircularCollectionView.podspec
 
 SPEC CHECKSUMS:
-  PMCircularCollectionView: e01a613b16cad07e14b766988ce0da1ad0e1c271
-  PMUtils: cb31f9fd9ef8397119b373a586c1e7743e805a4c
+  PMCircularCollectionView: 04b29a5e260cad3dfaa4e420f54119948045805a
+  PMUtils: 7516bba9e782df460bb6810261e656a623ecd341
 
-COCOAPODS: 0.33.1
+COCOAPODS: 0.35.0
