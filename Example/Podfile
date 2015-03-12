@@ -1,3 +1,0 @@
-xcodeproj 'PMCircularCollectionView-iOSExample/PMCircularCollectionView-iOSExample.xcodeproj'
-
-pod "PMCircularCollectionView", :path => "../PMCircularCollectionView.podspec"
