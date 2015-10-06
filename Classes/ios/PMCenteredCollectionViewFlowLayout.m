@@ -29,6 +29,9 @@
 
 @implementation PMCenteredCollectionViewFlowLayout
 
+- (PMCenteredCircularCollectionView *)collectionView {
+    return (PMCenteredCircularCollectionView *)super.collectionView;
+}
 
 - (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset withScrollingVelocity:(CGPoint)velocity
 {

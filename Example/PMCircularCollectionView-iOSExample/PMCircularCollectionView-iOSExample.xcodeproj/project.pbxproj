@@ -18,8 +18,7 @@
 		74A36AA218DAC895001013CD /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 74A36AA018DAC895001013CD /* InfoPlist.strings */; };
 		74A36AA418DAC895001013CD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 74A36AA318DAC895001013CD /* main.m */; };
 		74A36AA818DAC895001013CD /* PMAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 74A36AA718DAC895001013CD /* PMAppDelegate.m */; };
-		74A36AAB18DAC895001013CD /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74A36AA918DAC895001013CD /* Main_iPhone.storyboard */; };
-		74A36AAE18DAC895001013CD /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74A36AAC18DAC895001013CD /* Main_iPad.storyboard */; };
+		74A36AAB18DAC895001013CD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74A36AA918DAC895001013CD /* Main.storyboard */; };
 		74A36AB118DAC895001013CD /* PMViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 74A36AB018DAC895001013CD /* PMViewController.m */; };
 		74A36AB318DAC895001013CD /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 74A36AB218DAC895001013CD /* Images.xcassets */; };
 		74A36ABA18DAC895001013CD /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74A36AB918DAC895001013CD /* XCTest.framework */; };
@@ -27,6 +26,7 @@
 		74A36ABC18DAC895001013CD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74A36A9B18DAC895001013CD /* UIKit.framework */; };
 		74A36AC418DAC895001013CD /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 74A36AC218DAC895001013CD /* InfoPlist.strings */; };
 		74A36AC618DAC895001013CD /* PMCircularCollectionView_iOSExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 74A36AC518DAC895001013CD /* PMCircularCollectionView_iOSExampleTests.m */; };
+		7611FA221BC3EDD700FB6746 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7611FA211BC3EDD700FB6746 /* LaunchScreen.xib */; settings = {ASSET_TAGS = (); }; };
 		AABDCF6939A14C00A9E34FB9 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6841CB31DB5B4C3E8E9B4858 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -58,8 +58,7 @@
 		74A36AA518DAC895001013CD /* PMCircularCollectionView-iOSExample-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PMCircularCollectionView-iOSExample-Prefix.pch"; sourceTree = "<group>"; };
 		74A36AA618DAC895001013CD /* PMAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PMAppDelegate.h; sourceTree = "<group>"; };
 		74A36AA718DAC895001013CD /* PMAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PMAppDelegate.m; sourceTree = "<group>"; };
-		74A36AAA18DAC895001013CD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
-		74A36AAD18DAC895001013CD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
+		74A36AAA18DAC895001013CD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		74A36AAF18DAC895001013CD /* PMViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PMViewController.h; sourceTree = "<group>"; };
 		74A36AB018DAC895001013CD /* PMViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PMViewController.m; sourceTree = "<group>"; };
 		74A36AB218DAC895001013CD /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -68,6 +67,7 @@
 		74A36AC118DAC895001013CD /* PMCircularCollectionView-iOSExampleTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PMCircularCollectionView-iOSExampleTests-Info.plist"; sourceTree = "<group>"; };
 		74A36AC318DAC895001013CD /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		74A36AC518DAC895001013CD /* PMCircularCollectionView_iOSExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PMCircularCollectionView_iOSExampleTests.m; sourceTree = "<group>"; };
+		7611FA211BC3EDD700FB6746 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,8 +132,8 @@
 			children = (
 				74A36AA618DAC895001013CD /* PMAppDelegate.h */,
 				74A36AA718DAC895001013CD /* PMAppDelegate.m */,
-				74A36AA918DAC895001013CD /* Main_iPhone.storyboard */,
-				74A36AAC18DAC895001013CD /* Main_iPad.storyboard */,
+				74A36AA918DAC895001013CD /* Main.storyboard */,
+				7611FA211BC3EDD700FB6746 /* LaunchScreen.xib */,
 				74A36AAF18DAC895001013CD /* PMViewController.h */,
 				74A36AB018DAC895001013CD /* PMViewController.m */,
 				74A36AB218DAC895001013CD /* Images.xcassets */,
@@ -223,7 +223,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = PM;
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Peter Meyers";
 				TargetAttributes = {
 					74A36AB718DAC895001013CD = {
@@ -255,12 +255,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7611FA221BC3EDD700FB6746 /* LaunchScreen.xib in Resources */,
 				6780A79F1949676C006A7DAD /* stock_photo4.jpg in Resources */,
 				6780A79C1949676C006A7DAD /* stock_photo1.jpg in Resources */,
-				74A36AAE18DAC895001013CD /* Main_iPad.storyboard in Resources */,
 				6780A79E1949676C006A7DAD /* stock_photo3.jpg in Resources */,
 				74A36AB318DAC895001013CD /* Images.xcassets in Resources */,
-				74A36AAB18DAC895001013CD /* Main_iPhone.storyboard in Resources */,
+				74A36AAB18DAC895001013CD /* Main.storyboard in Resources */,
 				6780A79D1949676C006A7DAD /* stock_photo2.jpg in Resources */,
 				6780A7A01949676C006A7DAD /* stock_photo5.jpg in Resources */,
 				74A36AA218DAC895001013CD /* InfoPlist.strings in Resources */,
@@ -348,20 +348,12 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		74A36AA918DAC895001013CD /* Main_iPhone.storyboard */ = {
+		74A36AA918DAC895001013CD /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				74A36AAA18DAC895001013CD /* Base */,
 			);
-			name = Main_iPhone.storyboard;
-			sourceTree = "<group>";
-		};
-		74A36AAC18DAC895001013CD /* Main_iPad.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				74A36AAD18DAC895001013CD /* Base */,
-			);
-			name = Main_iPad.storyboard;
+			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 		74A36AC218DAC895001013CD /* InfoPlist.strings */ = {
@@ -393,6 +385,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -452,12 +445,13 @@
 			baseConfigurationReference = 6336FA2F3339488EB63B98F6 /* Pods.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PMCircularCollectionView-iOSExample/PMCircularCollectionView-iOSExample-Prefix.pch";
 				INFOPLIST_FILE = "PMCircularCollectionView-iOSExample/PMCircularCollectionView-iOSExample-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.petermeyers.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -468,12 +462,13 @@
 			baseConfigurationReference = 6336FA2F3339488EB63B98F6 /* Pods.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
 				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PMCircularCollectionView-iOSExample/PMCircularCollectionView-iOSExample-Prefix.pch";
 				INFOPLIST_FILE = "PMCircularCollectionView-iOSExample/PMCircularCollectionView-iOSExample-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.petermeyers.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -495,6 +490,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "PMCircularCollectionView-iOSExampleTests/PMCircularCollectionView-iOSExampleTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.petermeyers.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
@@ -513,6 +509,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PMCircularCollectionView-iOSExample/PMCircularCollectionView-iOSExample-Prefix.pch";
 				INFOPLIST_FILE = "PMCircularCollectionView-iOSExampleTests/PMCircularCollectionView-iOSExampleTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.petermeyers.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;

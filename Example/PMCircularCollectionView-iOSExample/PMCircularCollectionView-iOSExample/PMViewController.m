@@ -52,7 +52,7 @@ static NSString * const PMCellReuseIdentifier = @"PMCellReuseIdentifier";
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     layout.minimumLineSpacing = 10.0f;
     layout.minimumInteritemSpacing = 50.0f;
-	CGFloat minDimension = fminf(self.view.bounds.size.width, self.view.bounds.size.height);
+	CGFloat minDimension = fmin(self.view.bounds.size.width, self.view.bounds.size.height);
     layout.itemSize = CGSizeMake(minDimension, minDimension);
     
     _collectionView = [[PMCenteredCircularCollectionView alloc] initWithFrame:frame

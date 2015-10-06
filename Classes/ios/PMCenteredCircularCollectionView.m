@@ -34,6 +34,9 @@
     BOOL _delegateRespondsToScrollViewDidEndDecelerating;
 }
 
+@dynamic collectionViewLayout;
+@dynamic delegate;
+
 + (instancetype) collectionViewWithFrame:(CGRect)frame collectionViewLayout:(PMCenteredCollectionViewFlowLayout *)layout
 {
     return [[self alloc] initWithFrame:frame collectionViewLayout:layout];

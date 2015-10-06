@@ -44,6 +44,8 @@ static NSUInteger const ContentMultiplier = 4;
 }
 
 @synthesize circularDisabled = _explicitlyDisabled;
+@dynamic collectionViewLayout;
+@dynamic delegate;
 
 + (instancetype) collectionViewWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewFlowLayout *)layout
 {
@@ -234,7 +236,7 @@ static NSUInteger const ContentMultiplier = 4;
                 CGFloat deltaFromCenter = currentOffset.x - contentCenteredX;
                 CGFloat singleContentWidth = self.contentSize.width / ContentMultiplier;
                 
-                if (fabsf(deltaFromCenter) >= singleContentWidth ) {
+                if (fabs(deltaFromCenter) >= singleContentWidth ) {
                     
                     CGFloat correction = (deltaFromCenter > 0)? deltaFromCenter - singleContentWidth : deltaFromCenter + singleContentWidth;
                     
@@ -248,7 +250,7 @@ static NSUInteger const ContentMultiplier = 4;
                 CGFloat deltaFromCenter = currentOffset.y - contentCenteredY;
                 CGFloat singleContentHeight = self.contentSize.height / ContentMultiplier;
                 
-                if (fabsf(deltaFromCenter) >= singleContentHeight) {
+                if (fabs(deltaFromCenter) >= singleContentHeight) {
                     
                     CGFloat correction = (deltaFromCenter > 0)? deltaFromCenter - singleContentHeight : deltaFromCenter + singleContentHeight;
                     
