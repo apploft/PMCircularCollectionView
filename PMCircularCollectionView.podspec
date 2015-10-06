@@ -5,14 +5,14 @@ Pod::Spec.new do |s|
   s.homepage         = "https://github.com/pm-dev/#{s.name}"
   s.license          = 'MIT'
   s.author           = { "Peter Meyers" => "petermeyers1@gmail.com" }
-  s.source           = { :git => "https://github.com/pm-dev/#{s.name}.git", :tag => s.version.to_s }
-  s.platform         = :ios, '7.0'
-  s.ios.deployment_target = '7.0'
+  s.source           = { :git => "https://github.com/apploft/#{s.name}.git", :tag => s.version.to_s }
+  s.platform         = :ios, '8.1'
+  s.ios.deployment_target = '8.1'
   s.requires_arc     = true
   s.source_files     = 'Classes/**/*.{h,m}'
   s.ios.exclude_files = 'Classes/osx'
   s.osx.exclude_files = 'Classes/ios'
   s.public_header_files = 'Classes/**/*.h'
   s.frameworks       = 'Foundation', 'UIKit'
-  s.dependency 'PMUtils'
+  s.dependency 'PMUtils', '0.9.0'
 end
