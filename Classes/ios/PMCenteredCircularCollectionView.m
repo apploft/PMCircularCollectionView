@@ -155,13 +155,17 @@
 		
 		_centeredIndex = [self normalizeIndex:indexPath.item];
 		
-		[self scrollToItemAtIndexPath:indexPath
-					 atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally | UICollectionViewScrollPositionCenteredVertically
-							 animated:animated];
-		
-		if (notifyDelegate && _delegateRespondsToWillCenterItemAtIndex) {
-			[_originalDelegate collectionView:self willCenterItemAtIndex:_centeredIndex];
-		}
+        @try {
+            [self scrollToItemAtIndexPath:indexPath
+                         atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally | UICollectionViewScrollPositionCenteredVertically
+                                 animated:animated];
+            
+            if (notifyDelegate && _delegateRespondsToWillCenterItemAtIndex) {
+                [_originalDelegate collectionView:self willCenterItemAtIndex:_centeredIndex];
+            }
+        } @catch (NSException *exception) {
+            NSLog(@"%s: Trying to scroll to invalid index path %@", __PRETTY_FUNCTION__, indexPath);
+        }
     }
 }
 
