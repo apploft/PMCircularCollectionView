@@ -171,7 +171,8 @@
 
 // Certain crashes occured suggesting that sometimes the index paths seems to be invalid
 - (BOOL)PM_isSaneIndexPath:(NSIndexPath*)indexPath {
-    return indexPath.row != NSNotFound && indexPath.section != NSNotFound;
+    return ((long)indexPath.row >= 0 && indexPath.row < NSNotFound &&
+            (long)indexPath.section >= 0 && indexPath.section < NSNotFound);
 }
 
 - (CGPoint) PM_contentOffsetForCenteredOffset:(CGPoint)centeredOffset
