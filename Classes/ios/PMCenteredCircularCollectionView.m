@@ -151,7 +151,7 @@
 {
 	NSParameterAssert(indexPath);
 	
-    if ([self circularActive]) {
+    if ([self circularActive] && [self PM_isSaneIndexPath:indexPath]) {
 		
 		_centeredIndex = [self normalizeIndex:indexPath.item];
 		
@@ -167,6 +167,11 @@
             NSLog(@"%s: Trying to scroll to invalid index path %@", __PRETTY_FUNCTION__, indexPath);
         }
     }
+}
+
+// Certain crashes occured suggesting that sometimes the index paths seems to be invalid
+- (BOOL)PM_isSaneIndexPath:(NSIndexPath*)indexPath {
+    return indexPath.row != NSNotFound && indexPath.section != NSNotFound;
 }
 
 - (CGPoint) PM_contentOffsetForCenteredOffset:(CGPoint)centeredOffset
