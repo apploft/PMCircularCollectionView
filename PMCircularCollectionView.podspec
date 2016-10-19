@@ -14,5 +14,5 @@ Pod::Spec.new do |s|
   s.osx.exclude_files = 'Classes/ios'
   s.public_header_files = 'Classes/**/*.h'
   s.frameworks       = 'Foundation', 'UIKit'
-  s.dependency 'PMUtils', '0.9.0'
+  s.dependency 'PMUtils', '0.9.2'
 end
